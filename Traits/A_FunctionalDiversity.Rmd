@@ -1,0 +1,260 @@
+---
+title: "Functional Diversity"
+output: pdf_document
+---
+
+```{r global_options, echo=FALSE}
+### ATTENTION AU DEV()
+knitr::opts_chunk$set(fig.height=5.2, fig.width=5.9, dev='pdf',fig.path='Outputs/FD/')
+```
+
+```{r preparation, echo=FALSE, results="hide"}
+setwd("C:/Timoner/LEBA/Article/Code")
+library("ggplot2", lib.loc="~/R/win-library/3.4")
+library("ade4", lib.loc="~/R/win-library/3.4")
+library("vegan", lib.loc="~/R/win-library/3.4")
+library("gridExtra", lib.loc="~/R/win-library/3.4")
+library("FD", lib.loc="~/R/win-library/3.4")
+
+## Load trait table
+T <- read.table("Tableau5.txt", header=TRUE)
+row.names(T) <- T[,1]
+T <- T[,-1]
+
+# Blocks tableau
+blocks <- c(4,5,7,6,10,5,4,3,2,8,5)
+names(blocks) <- c("curr","sapr","size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
+
+# # Seulement traits biologiques
+# T <- T[,-c(1:9)]
+# blocks <- c(7,6,10,5,4,3,2,8,5)
+# names(blocks) <- c("size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
+
+#Seul. traits plus importants:
+# T <- T[,c(10:32,47:59)]
+# blocks <- c(7,6,10,8,5)
+# names(blocks) <- c("size","locom","feeding","repr","resist")
+
+# Detail sampling
+S <- read.table("Sampling.txt", header=TRUE)
+S$date <- as.Date(S$date,format="%d.%m.%Y")
+S$date2 <- as.Date(S$date2,format="%d.%m.%Y")
+S1 <- S
+
+# Matrice des individus (Site x taxon)
+M <- read.table("Sampling_matrix.txt", header=TRUE)
+
+# Take off Chironomidae
+M <- M[,-110]
+T1 <- T[-110,]
+
+# Aggregation
+colmerg <- "statyear"
+colagname <- S1$statyear
+colag <-2
+
+M1 <- aggregate(M,list(colagname),sum)
+
+
+# make number of rows of sampling equal to Mg
+## Be careful to the column number (code or statyear, etc.)
+# for (i in 1:(nrow(S1)-1)){
+#   if (S1[i,colag] == S1[i+1,colag]){
+#     S1[i,colag] <- NA
+#   }
+# }
+# S1 <- subset(S1, colagname !="NA")
+
+## Much easier way !!
+S1 <- S1[!duplicated(S[,colag]),]
+
+# Aggregation of data changed the order of samples
+names(M1)[1] <- "sampcode"
+S1 <- merge(S1,M1,by.x=colmerg,by.y="sampcode")
+
+### Enlever des Sites
+
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+# ## Enlever seulement les nouveaux sites
+M1 <- M1[S1$chanstat %!in% c("LUISUpN","MOIRUpN","BEARDoN","ENILDoN"),-1]
+S1 <- S1[S1$chanstat %!in% c("LUISUpN","MOIRUpN","BEARDoN","ENILDoN"),1:16]
+T1 <- T1[-which(names(M1)%in%names(M1[apply(M1,2,sum)==0])),]
+M1 <- M1[,-which(names(M1)%in%names(M1[apply(M1,2,sum)==0]))]
+S1[] <- lapply(S1, function(x) if(is.factor(x)) factor(x) else x)
+
+S1$chanstat <- factor(S1$chanstat, levels=c("BEARUp","BEARDo","MOIRUp","MOIRDo","LUISUp","LUISDo","FOURUp","FOURDo","CHANUp","CHANDo","LUCEUp","LUCEDo","ENILUp","ENILDo"))
+
+## Prepare fuzzy
+T1 <- prep.fuzzy.var(T1,blocks)
+
+#Distance entre taxons
+FCA <- dudi.fca(T1,scannf=FALSE,nf=5)
+distFCA <- dist.dudi(FCA)
+labels(distFCA) -> names(M1)
+
+```
+
+```{r FD}
+# M2 <- prep.fuzzy.var(M1,dim(M1)[2])
+# attributes(M2) <- attributes(M1)
+M2 <- M1
+
+## Functional diversity (avec windows peut planter si le nombre d'axes conservés est trop élevé, dans ce cas
+## j'en ai gardé 10)
+## voir package "FD" J'ai utilisé la fonction dbFD pour FRic et FEVe
+fd <- dbFD(distFCA,M2,m=10)
+
+## Utilisé dpcoa pour Rao et RaoDis
+fd2 <- dpcoa(M2,distFCA,scannf = FALSE,nf=2)
+beta <- betadisper(fd2$RaoDis,S1$year)
+boxplot(beta)
+
+## Pour normalisé les valeurs de FRic entre 0 et 1
+tr <- function(x){(x-min(x))/(max(x)-min(x))}
+fd$FRic <- tr(fd$FRic)
+
+
+indices <- list(FRic=fd$FRic,FEve=fd$FEve,RaoDiv=fd2$RaoDiv,RaoDis=beta$distances)
+
+#Our digit transformation function for labels
+scaleFUN <- function(x) sprintf("%.1f", x)
+```
+
+```{r dgl, echo=FALSE}
+
+## Loop sur chaque indice pour comparaison entre années
+
+pos <- 0
+for(diver in indices){
+  pos <- pos+1
+  print(names(indices)[pos])
+  dfdiv <- data.frame(Index=diver[S1$channel!="CHAN"],Year=factor(S1$year[S1$channel!="CHAN"]))
+  names(dfdiv)[1] <- names(indices)[pos]
+  p <- ggplot(dfdiv, aes_string("Year", names(indices)[pos]))+ stat_boxplot(geom = "errorbar", width = 0.4)
+  p <- p + geom_boxplot() 
+  p <- p + scale_y_continuous(labels=scaleFUN)
+  p <- p + theme_bw()
+  print(p)
+  wil <- pairwise.wilcox.test(diver,factor(S1$year),paired=TRUE,p.adjust.method = "none")
+  print(wil)
+}
+
+## Loop sur chaque indice pour comparaison entre sites
+pos <- 0
+for(diver in indices){
+  pos <- pos+1
+  print(names(indices)[pos])
+  dfdiv <- data.frame(Index=diver,Site=factor(S1$chanstat),Channel=factor(S1$channel))
+  dfdiv$Site <- factor(dfdiv$Site, levels=c("BEARUp","BEARDo","MOIRUp","MOIRDo","LUISUp","LUISDo","FOURUp","FOURDo","CHANUp","CHANDo","LUCEUp","LUCEDo","ENILUp","ENILDo"))
+  names(dfdiv)[1] <- names(indices)[pos]
+  
+  p <- ggplot(dfdiv, aes_string("Site", names(indices)[pos]))
+  p <- p + stat_boxplot(geom = "errorbar", width = 0.4)
+  p <- p + geom_boxplot(aes(fill=Channel))
+  p <- p + guides(fill=FALSE)
+  p <- p + scale_y_continuous(labels=scaleFUN)
+  p <- p + theme_bw()
+  p <- p + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+  print(p)
+  wil <- pairwise.wilcox.test(diver,factor(S1$chanstat),paired=TRUE,p.adjust.method = "none")
+  print(wil)
+}
+```
+
+```{r dst, echo=FALSE}
+# Loop sur chaque lône et identification des tendances
+
+indices <- list(FRic=fd$FRic,FEve=fd$FEve,RaoDiv=fd2$RaoDiv)
+for(ch in levels(factor(S1$channel))){
+  posI <- 0
+  for(diver in indices){
+    posI <- posI + 1
+    xl1 <- min(diver)
+    xl2 <- max(diver)
+    
+    fit <- list()
+    RpVTab <- list()
+    pos <- 0
+    RpV <- NULL
+    for(i in levels(factor(S1$chanstat[S1$channel==ch]))){
+      pos <- pos+1
+      S2 <- S1[S1$chanstat==i,]
+      div <- diver[S1$chanstat==i]
+      print(i)
+      
+      ## Selon les type de valeurs, modélisation différente (binomial ou gaussian)
+      if(posI!=3){
+        y1 <- div
+        x1 <- as.numeric(S2$date)/1000
+        odel <- glm(y1 ~x1, family=quasibinomial(link='logit'))
+        yf <- fitted.values(odel)
+        s <-summary(odel)
+        # c1 <- s$coefficients[1,4]
+        c2 <- s$coefficients[2,4]
+        # C <- c(c1,c2)
+        var <- max(fitted.values(odel))-min(fitted.values(odel))
+        
+        ## On regarde si on a une tendance ou pas
+        if(c2<0.07){
+          fit[[pos]] <- fitted.values(odel)
+          RpVTab[[pos]] <- s
+        }else{
+          fit[[pos]] <- NA
+          RpVTab[[pos]] <- NA
+        }
+        
+      }else{
+        lm1 <- lm(y1~x1)
+        c1 <- coef(lm1)[[1]]
+        c2 <- coef(lm1)[[2]]
+        odel <- glm(y1~x1,family = gaussian(link="log"),start = c(c1,c2))
+        yf <- fitted.values(odel)
+        s <- summary(odel)
+        c2 <- s$coefficients[2,4]
+        var <- max(fitted.values(odel))-min(fitted.values(odel))
+        if(c2<0.07){
+          fit[[pos]] <- fitted.values(odel)
+          RpVTab[[pos]] <- s
+        }else{
+          fit[[pos]] <- NA
+          RpVTab[[pos]] <- NA
+        }
+      }
+    }
+    
+    ## PLOT
+    
+    FD <- diver[S1$channel==ch]
+    Date <- S1$date[S1$channel==ch]
+    Site <- S1$chanstat[S1$channel==ch]
+    dftest <- data.frame(FD,Date,Site)
+    # Plot
+    names(dftest)[1] <- names(indices)[posI]
+    p <- ggplot(dftest,aes_string(y=names(indices)[posI],x="Date",group="Site",color="Site",shape="Site"))+ylim(xl1,xl2)
+    p <- p + scale_shape_manual(values=1:nlevels(dftest$Site)) + geom_point() + geom_line(show.legend = FALSE,size=0.3)
+    p <- p + theme_bw()
+    
+    ## On regarde si une tendance avait été enregistrée, auquel cas on la plot
+    for(k in 1:pos){
+      # rm(Er)
+      if(!is.na(fit[k])){
+        print(RpVTab)[[k]]
+        name <- levels(factor(S1$chanstat[S1$channel==ch]))[k]
+        l1 <- subset(dftest,Site==name)
+        l2 <- fit[[k]]
+        df2 <- cbind(l1, L2=l2)
+        # p <- p + geom_line(data=df2,aes(y=L2,x=Date),linetype="dashed",size=0.3)
+        if(posI!=3){
+          p <- p + stat_smooth(data=subset(dftest,Site==name), method='glm',formula = y~x, method.args=list(family=quasibinomial('logit')), se = FALSE, linetype="dashed",size=0.3, show.legend = FALSE)
+        }else{
+          p <- p + stat_smooth(data=subset(dftest,Site==name), method='glm',formula = y~x, method.args=list(family=gaussian('log')), se = FALSE, linetype="dashed",size=0.3, show.legend = FALSE)
+        }
+      }
+    }
+    print(p)  
+  }
+}
+
+```
+

@@ -1,0 +1,298 @@
+Id	Id2	Order	Family	Genus	Species	Invasif	EPT
+X1	x1	Amphipoda	Crangonyctidae	Crangonyx	pseudogracilis	1	0
+X2	x2	Amphipoda	Gammaridae	Gammarus	pulex/fossarum	0	0
+X3	x3	Amphipoda	Gammaridae	Gammarus	tigrinus	1	0
+X4	x4	Amphipoda	Pontogammaridae	Dikerogammarus	villosus	1	0
+X5	x5	Bivalvia	Corbiculidae	Corbicula	fluminea	1	0
+X6	x6	Bivalvia	Dreissenidae	Dreissena	polymorpha	1	0
+X7	x7	Bivalvia	Sphaeriidae	Musculium	lacustre	0	0
+X8	x8	Bivalvia	Sphaeriidae	Pisidium	sp.	0	0
+X9	x9	Bivalvia	Sphaeriidae	Sphaerium	sp.	0	0
+X10	x10	Coleoptera	Chrysomelidae	Gen.	sp. Lv.	0	0
+X11	x11	Coleoptera	Curculionidae	Gen.	sp. Ad.	0	0
+X12	x12	Coleoptera	Dryopidae	Dryops	sp. Ad.	0	0
+X13	x13	Coleoptera	Dryopidae	Dryops	sp. Lv.	0	0
+X14	x14	Coleoptera	Dryopidae	Pomatinus	substriatus Ad.	0	0
+X15	x15	Coleoptera	Dytiscidae	Agabus	sp. Lv.	0	0
+X16	x16	Coleoptera	Dytiscidae	Agabus	sturmii Ad.	0	0
+X17	x17	Coleoptera	Dytiscidae	Bidessus	minutissimus Ad.	0	0
+X18	x18	Coleoptera	Dytiscidae	Hygrotus	sp. Lv.	0	0
+X19	x19	Coleoptera	Dytiscidae	Dytiscus	sp. Lv.	0	0
+X20	x20	Coleoptera	Dytiscidae	Graptodytes	granularis Ad.	0	0
+X21	x21	Coleoptera	Dytiscidae	Graptodytes	pictus Ad.	0	0
+X22	x22	Coleoptera	Dytiscidae	Hydaticus	transversalis Ad.	0	0
+X23	x23	Coleoptera	Dytiscidae	Hydroglyphus	geminus Ad.	0	0
+X24	x24	Coleoptera	Dytiscidae	Hydroporus	angustatus Ad.	0	0
+X25	x25	Coleoptera	Dytiscidae	Hydroporus	palustris Ad.	0	0
+X26	x26	Coleoptera	Dytiscidae	Hydroporus	sp. Lv.	0	0
+X27	x27	Coleoptera	Dytiscidae	Hydroporus	tristis Ad.	0	0
+X28	x28	Coleoptera	Dytiscidae	Hygrotus	inaequalis Ad.	0	0
+X29	x29	Coleoptera	Dytiscidae	Hyphydrus	ovatus Ad.	0	0
+X30	x30	Coleoptera	Dytiscidae	Hyphydrus	ovatus Lv.	0	0
+X31	x31	Coleoptera	Dytiscidae	Ilybius	ater Ad.	0	0
+X32	x32	Coleoptera	Dytiscidae	Ilybius	fuliginosus Ad.	0	0
+X33	x33	Coleoptera	Dytiscidae	Ilybius	quadriguttatus Ad.	0	0
+X34	x34	Coleoptera	Dytiscidae	Ilybius	sp. Lv.	0	0
+X35	x35	Coleoptera	Dytiscidae	Ilybius	fenestratus Ad.	0	0
+X36	x36	Coleoptera	Dytiscidae	Laccophilus	hyalinus Ad.	0	0
+X37	x37	Coleoptera	Dytiscidae	Laccophilus	minutus Ad.	0	0
+X38	x38	Coleoptera	Dytiscidae	Laccophilus	poecilus Ad.	0	0
+X39	x39	Coleoptera	Dytiscidae	Laccophilus	sp. Lv.	0	0
+X40	x40	Coleoptera	Dytiscidae	Nebrioporus	elegans Ad.	0	0
+X41	x41	Coleoptera	Dytiscidae	Nebrioporus	sp. Lv.	0	0
+X42	x42	Coleoptera	Dytiscidae	Oreodytes	septentrionalis Ad.	0	0
+X43	x43	Coleoptera	Dytiscidae	Platambus	maculatus Ad.	0	0
+X44	x44	Coleoptera	Dytiscidae	Platambus	maculatus Lv.	0	0
+X45	x45	Coleoptera	Dytiscidae	Stictonectes	sp. Lv.	0	0
+X46	x46	Coleoptera	Dytiscidae	Stictotarsus	duodecimpustulatus Ad.	0	0
+X47	x47	Coleoptera	Dytiscidae	Stictotarsus	duodecimpustulatus Lv.	0	0
+X48	x48	Coleoptera	Dytiscidae	Yola	bicarinata Ad.	0	0
+X49	x49	Coleoptera	Elmidae	Elmis	aenea Ad.	0	0
+X50	x50	Coleoptera	Elmidae	Elmis	sp. Lv.	0	0
+X51	x51	Coleoptera	Elmidae	Esolus	parallelepipedus Ad.	0	0
+X52	x52	Coleoptera	Elmidae	Esolus	sp. Lv.	0	0
+X53	x53	Coleoptera	Elmidae	Limnius	perrisi Ad.	0	0
+X54	x54	Coleoptera	Elmidae	Limnius	sp. Lv.	0	0
+X55	x55	Coleoptera	Elmidae	Limnius	volckmari Ad.	0	0
+X56	x56	Coleoptera	Elmidae	Oulimnius	major Ad.	0	0
+X57	x57	Coleoptera	Elmidae	Oulimnius	sp. Lv.	0	0
+X58	x58	Coleoptera	Elmidae	Oulimnius	tuberculatus Ad.	0	0
+X59	x59	Coleoptera	Elmidae	Riolus	sp. Lv.	0	0
+X60	x60	Coleoptera	Gyrinidae	Gyrinus	natator Ad.	0	0
+X61	x61	Coleoptera	Gyrinidae	Gyrinus	sp. Lv.	0	0
+X62	x62	Coleoptera	Gyrinidae	Gyrinus	substriatus Ad.	0	0
+X63	x63	Coleoptera	Gyrinidae	Orectochilus	sp. Ad.	0	0
+X64	x64	Coleoptera	Gyrinidae	Orectochilus	sp. Lv.	0	0
+X65	x65	Coleoptera	Haliplidae	Brychius	elevatus Ad.	0	0
+X66	x66	Coleoptera	Haliplidae	Brychius	elevatus Lv.	0	0
+X67	x67	Coleoptera	Haliplidae	Haliplus	confinis Ad.	0	0
+X68	x68	Coleoptera	Haliplidae	Haliplus	flavicollis Ad.	0	0
+X69	x69	Coleoptera	Haliplidae	Haliplus	fluviatilis Ad.	0	0
+X70	x70	Coleoptera	Haliplidae	Haliplus	fulvus Lv.	0	0
+X71	x71	Coleoptera	Haliplidae	Haliplus	heydeni Ad.	0	0
+X72	x72	Coleoptera	Haliplidae	Haliplus	immaculatus Ad.	0	0
+X73	x73	Coleoptera	Haliplidae	Haliplus	laminatus Ad.	0	0
+X74	x74	Coleoptera	Haliplidae	Haliplus	lineatocollis Ad.	0	0
+X75	x75	Coleoptera	Haliplidae	Haliplus	lineolatus Ad.	0	0
+X76	x76	Coleoptera	Haliplidae	Haliplus	mucronatus Ad.	0	0
+X77	x77	Coleoptera	Haliplidae	Haliplus	obliquus Ad.	0	0
+X78	x78	Coleoptera	Haliplidae	Haliplus	ruficollis Ad.	0	0
+X79	x79	Coleoptera	Haliplidae	Haliplus	fluviatilis/ruficolis/heydeni fem. Ad.	0	0
+X80	x80	Coleoptera	Haliplidae	Haliplus	wehnckei Ad.	0	0
+X81	x81	Coleoptera	Haliplidae	Haliplus	sp. Lv.	0	0
+X82	x82	Coleoptera	Haliplidae	Peltodytes	caesus Ad.	0	0
+X83	x83	Coleoptera	Haliplidae	Peltodytes	rotundatus Ad.	0	0
+X84	x84	Coleoptera	Haliplidae	Peltodytes	sp. Lv.	0	0
+X85	x85	Coleoptera	Hydraenidae	Hydraena	palustris Ad.	0	0
+X86	x86	Coleoptera	Hydraenidae	Hydraena	riparia/assimilis Ad.	0	0
+X87	x87	Coleoptera	Hydraenidae	Hydraena	testacea Ad.	0	0
+X88	x88	Coleoptera	Hydraenidae	Ochthebius	sp. Ad.	0	0
+X89	x89	Coleoptera	Hydrophilidae	Anacaena	bipustulata Ad.	0	0
+X90	x90	Coleoptera	Hydrophilidae	Anacaena	limbata Ad.	0	0
+X91	x91	Coleoptera	Hydrophilidae	Enochrus	coarctatus Ad.	0	0
+X92	x92	Coleoptera	Hydrophilidae	Enochrus	sp. Lv.	0	0
+X93	x93	Coleoptera	Hydrophilidae	Helochares	lividus Ad.	0	0
+X94	x94	Coleoptera	Hydrophilidae	Helochares	obscurus Ad.	0	0
+X95	x95	Coleoptera	Hydrophilidae	Helochares	punctatus Ad.	0	0
+X96	x96	Coleoptera	Hydrophilidae	Helochares	sp. Lv.	0	0
+X97	x97	Coleoptera	Hydrophilidae	Hydrobius	fuscipes Ad.	0	0
+X98	x98	Coleoptera	Hydrophilidae	Hydrophilus	piceus Lv.	0	0
+X99	x99	Coleoptera	Hydrophilidae	Laccobius	bipunctatus Ad.	0	0
+X100	x100	Coleoptera	Hydrophilidae	Laccobius	minutus Ad.	0	0
+X101	x101	Coleoptera	Hydrophilidae	Laccobius	sp. Lv.	0	0
+X102	x102	Coleoptera	Hydrophilidae	Laccobius	striatulus Ad.	0	0
+X103	x103	Coleoptera	Psephenidae	Eubria	palustris Lv.	0	0
+X104	x104	Coleoptera	Noteridae	Noterus	clavicornis Ad.	0	0
+X105	x105	Coleoptera	Noteridae	Noterus	sp. Lv.	0	0
+X106	x106	Decapoda	Cambaridae	Orconectes	limosus	1	0
+X107	x107	Diptera	Athericidae	Atrichops	crassipes	0	0
+X108	x108	Diptera	Ceratopogonidae	Gen.	sp.	0	0
+X109	x109	Diptera	Chaoboridae	Chaoborus	sp.	0	0
+X110	x110	Diptera	Chironomidae	Gen.	sp.	0	0
+X111	x111	Diptera	Culicidae	Gen.	sp.	0	0
+X112	x112	Diptera	Dixidae	Gen.	sp.	0	0
+X113	x113	Diptera	Dolichopodidae	Gen.	sp.	0	0
+X114	x114	Diptera	Empididae	Gen.	sp.	0	0
+X115	x115	Diptera	Ephydridae	Gen.	sp.	0	0
+X116	x116	Diptera	Muscidae	Gen.	sp.	0	0
+X117	x117	Diptera	Limoniidae	Gen.	sp.	0	0
+X118	x118	Diptera	Psychodidae	Gen.	sp.	0	0
+X119	x119	Diptera	Ptychopteridae	Gen.	sp.	0	0
+X120	x120	Diptera	Rhagionidae	Gen.	sp.	0	0
+X121	x121	Diptera	Scatophagidae	Gen.	sp.	0	0
+X122	x122	Diptera	Sciomyzidae	Gen.	sp.	0	0
+X123	x123	Diptera	Simuliidae	Gen.	sp.	0	0
+X124	x124	Diptera	Stratiomyidae	Gen.	sp.	0	0
+X125	x125	Diptera	Syrphidae	Gen.	sp.	0	0
+X126	x126	Diptera	Tabanidae	Gen.	sp.	0	0
+X127	x127	Diptera	Tipulidae	Gen.	sp.	0	0
+X128	x128	Ephemeroptera	Baetidae	Cloeon	dipterum	0	1
+X129	x129	Ephemeroptera	Baetidae	Cloeon	simile	0	1
+X130	x130	Ephemeroptera	Baetidae	Centroptilum	luteolum	0	1
+X131	x131	Ephemeroptera	Baetidae	Baetis	sp.	0	1
+X132	x132	Ephemeroptera	Baetidae	Procloeon	bifidum	0	1
+X133	x133	Ephemeroptera	Caenidae	Caenis	beskidensis	0	1
+X134	x134	Ephemeroptera	Caenidae	Caenis	horaria	0	1
+X135	x135	Ephemeroptera	Caenidae	Caenis	luctuosa	0	1
+X136	x136	Ephemeroptera	Caenidae	Caenis	macrura	0	1
+X137	x137	Ephemeroptera	Caenidae	Caenis	pseudorivulorum	0	1
+X138	x138	Ephemeroptera	Caenidae	Caenis	robusta	0	1
+X139	x139	Ephemeroptera	Ephemerellidae	Serratella	ignita	0	1
+X140	x140	Ephemeroptera	Ephemeridae	Ephemera	sp.	0	1
+X141	x141	Ephemeroptera	Heptageniidae	Ecdyonurus	venosus	0	1
+X142	x142	Ephemeroptera	Heptageniidae	Epeorus	sp.	0	1
+X143	x143	Ephemeroptera	Heptageniidae	Heptagenia	sulphurea	0	1
+X144	x144	Ephemeroptera	Heptageniidae	Rhithrogena	semicolorata	0	1
+X145	x145	Ephemeroptera	Leptophlebiidae	Habrophlebia	lauta	0	1
+X146	x146	Ephemeroptera	Potamanthidae	Potamanthus	luteus	0	1
+X147	x147	Ephemeroptera	Siphlonuridae	Siphlonurus	aestivalis/lacustris	0	1
+X148	x148	Gasteropoda	Ancylidae	Ancylus	fluviatilis	0	0
+X149	x149	Gasteropoda	Bithyniidae	Bithynia	tentaculata	0	0
+X150	x150	Gasteropoda	Hydrobiidae	Potamopyrgus	antipodarum	1	0
+X151	x151	Gasteropoda	Lymnaeidae	Galba	truncatula	0	0
+X152	x152	Gasteropoda	Lymnaeidae	Lymnaea	stagnalis	0	0
+X153	x153	Gasteropoda	Lymnaeidae	Radix	auricularia	0	0
+X154	x154	Gasteropoda	Lymnaeidae	Radix	balthica	0	0
+X155	x155	Gasteropoda	Lymnaeidae	Radix	sp.	0	0
+X156	x156	Gasteropoda	Lymnaeidae	Stagnicola	sp.	0	0
+X157	x157	Gasteropoda	Neritidae	Theodoxus	fluviatilis	0	0
+X158	x158	Gasteropoda	Physidae	Physa	fontinalis	0	0
+X159	x159	Gasteropoda	Physidae	Physella	acuta	1	0
+X160	x160	Gasteropoda	Planorbidae	Anisus	vortex	0	0
+X161	x161	Gasteropoda	Planorbidae	Ferrissia	clessiniana	1	0
+X162	x162	Gasteropoda	Planorbidae	Gyraulus	albus	0	0
+X163	x163	Gasteropoda	Planorbidae	Gyraulus	parvus	1	0
+X164	x164	Gasteropoda	Planorbidae	Hippeutis	complanatus	0	0
+X165	x165	Gasteropoda	Planorbidae	Menetus	dilatatus	1	0
+X166	x166	Gasteropoda	Planorbidae	Planorbis	carinatus	0	0
+X167	x167	Gasteropoda	Valvatidae	Valvata	cristata	0	0
+X168	x168	Gasteropoda	Valvatidae	Valvata	piscinalis piscinalis	0	0
+X169	x169	Heteroptera	Corixidae (Corixinae)	Gen.	sp.	0	0
+X170	x170	Heteroptera	Corixidae	Micronecta	sp.	0	0
+X171	x171	Heteroptera	Gerridae	Gerris	sp.	0	0
+X172	x172	Heteroptera	Hydrometridae	Hydrometra	sp.	0	0
+X173	x173	Heteroptera	Naucoridae	Ilyocoris	cimicoides	0	0
+X174	x174	Heteroptera	Naucoridae	Gen.	sp.	0	0
+X175	x175	Heteroptera	Nepidae	Nepa	sp.	0	0
+X176	x176	Heteroptera	Nepidae	Ranatra	linearis	0	0
+X177	x177	Heteroptera	Notonectidae	Notonecta	sp.	0	0
+X178	x178	Heteroptera	Pleidae	Plea	minutissima	0	0
+X179	x179	Heteroptera	Velidae	Microvelia	sp.	0	0
+X180	x180	Hirudinea	Erpobdellidae	Gen.	sp.	0	0
+X181	x181	Hirudinea	Glossiphoniidae	Glossiphonia	sp.	0	0
+X182	x182	Hirudinea	Glossiphoniidae	Placobdella	costata	0	0
+X183	x183	Hirudinea	Glossiphoniidae	Helobdella	sp.	0	0
+X184	x184	Hirudinea	Glossiphonidae	Hemiclepsis	marginata	0	0
+X185	x185	Hirudinea	Glossiphoniidae	Theromyzon	tessulatum	0	0
+X186	x186	Hirudinea	Piscicolidae	Piscicola	geometra	0	0
+X187	x187	Hydrachnidia	Fam.	Gen.	sp.	0	0
+X188	x188	Hymenoptera	Agriotypidae	Agriotypus	armatus	0	0
+X189	x189	Isopoda	Asellidae	Asellus	aquaticus	0	0
+X190	x190	Lepidoptera	Crambidae	Acentria	ephemerella	0	0
+X191	x191	Lepidoptera	Crambidae	Cataclysta	lemnata	0	0
+X192	x192	Lepidoptera	Crambidae	Parapoynx	stratiotata	0	0
+X193	x193	Lepidoptera	Crambidae	Nymphula	nitidulata	0	0
+X194	x194	Lepidoptera	Crambidae	Elophila	rivulalis/nymphaeata	0	0
+X195	x195	Megaloptera	Sialidae	Sialis	fuliginosa	0	0
+X196	x196	Megaloptera	Sialidae	Sialis	lutaria	0	0
+X197	x197	Megaloptera	Sialidae	Sialis	nigripes	0	0
+X198	x198	Neuroptera	Sisyridae	Sisyra	sp.	0	0
+X199	x199	Mysida	Mysidae	Hemimysis	anomala	1	0
+X200	x200	Mysida	Mysidae	Mysis	relicta	1	0
+X201	x201	Odonata	Aeshnidae	Anax	imperator	0	0
+X202	x202	Odonata	Aeshnidae	Aeshna	sp.	0	0
+X203	x203	Odonata	Aeshnidae	Gen.	sp.	0	0
+X204	x204	Odonata	Calopterygidae	Calopteryx	splendens	0	0
+X205	x205	Odonata	Coenagrionidae	Coenagrion	puella/pulchellum	0	0
+X206	x206	Odonata	Coenagrionidae	Coenagrion	mercuriale	0	0
+X207	x207	Odonata	Coenagrionidae	Coenagrion	scitulum	0	0
+X208	x208	Odonata	Coenagrionidae	Enallagma	cyathigerum	0	0
+X209	x209	Odonata	Coenagrionidae	Erythromma	najas	0	0
+X210	x210	Odonata	Coenagrionidae	Erythromma	viridulum	0	0
+X211	x211	Odonata	Coenagrionidae	Gen.	sp.	0	0
+X212	x212	Odonata	Coenagrionidae	Ischnura	elegans	0	0
+X213	x213	Odonata	Coenagrionidae	Pyrrhosoma	nymphula	0	0
+X214	x214	Odonata	Gomphidae	Gomphus	vulgatissimus	0	0
+X215	x215	Odonata	Gomphidae	Onychogomphus	forcipatus	0	0
+X216	x216	Odonata	Lestidae	Chalcolestes	viridis	0	0
+X217	x217	Odonata	Libellulidae	Gen.	sp.	0	0
+X218	x218	Odonata	Libellulidae	Crocothemis	erythraea	0	0
+X219	x219	Odonata	Libellulidae	Libellula	depressa	0	0
+X220	x220	Odonata	Libellulidae	Libellula	fulva	0	0
+X221	x221	Odonata	Libellulidae	Orthetrum	sp.	0	0
+X222	x222	Odonata	Libellulidae	Sympetrum	striolatum	0	0
+X223	x223	Odonata	Platycnemididae	Platycnemis	pennipes	0	0
+X224	x224	Plecoptera	Leuctridae	Leuctra	sp.	0	1
+X225	x225	Plecoptera	Perlodidae	Isoperla	sp.	0	1
+X226	x226	Plecoptera	Nemouridae	Gen.	sp.	0	1
+X227	x227	Plecoptera	Taeniopterygidae	Brachyptera	sp.	0	1
+X228	x228	Polychaeta	Ampharetidae	Hypania	invalida	1	0
+X229	x229	Trichoptera	Beraeidae	Beraeodes	minutus	0	1
+X230	x230	Trichoptera	Glossosomatidae	Agapetus	fuscipes	0	1
+X231	x231	Trichoptera	Glossosomatidae	Agapetus	ochripes	0	1
+X232	x232	Trichoptera	Glossosomatidae	Glossosoma	boltoni	0	1
+X233	x233	Trichoptera	Goeridae	Goera	pilosa	0	1
+X234	x234	Trichoptera	Goeridae	Silo	nigricornis	0	1
+X235	x235	Trichoptera	Goeridae	Silo	piceus	0	1
+X236	x236	Trichoptera	Hydropsychidae	Hydropsyche	angustipennis	0	1
+X237	x237	Trichoptera	Hydropsychidae	Hydropsyche	contubernalis	0	1
+X238	x238	Trichoptera	Hydropsychidae	Hydropsyche	exocellata/modesta	0	1
+X239	x239	Trichoptera	Hydropsychidae	Hydropsyche	incognita	0	1
+X240	x240	Trichoptera	Hydropsychidae	Hydropsyche	instabilis	0	1
+X241	x241	Trichoptera	Hydropsychidae	Hydropsyche	pellucidula	0	1
+X242	x242	Trichoptera	Hydropsychidae	Hydropsyche	siltalai	0	1
+X243	x243	Trichoptera	Hydroptilidae	Agraylea	sexmaculata	0	1
+X244	x244	Trichoptera	Hydroptilidae	Hydroptila	sp.	0	1
+X245	x245	Trichoptera	Hydroptilidae	Orthotrichia	sp.	0	1
+X246	x246	Trichoptera	Hydroptilidae	Oxyethira	sp.	0	1
+X247	x247	Trichoptera	Hydroptilidae	Stactobia	sp.	0	1
+X248	x248	Trichoptera	Leptoceridae	Athripsodes	aterrimus	0	1
+X249	x249	Trichoptera	Leptoceridae	Athripsodes	albifrons	0	1
+X250	x250	Trichoptera	Leptoceridae	Athripsodes	cinereus	0	1
+X251	x251	Trichoptera	Leptoceridae	Ceraclea	aurea	0	1
+X252	x252	Trichoptera	Leptoceridae	Ceraclea	dissimilis	0	1
+X253	x253	Trichoptera	Leptoceridae	Ceraclea	sp.	0	1
+X254	x254	Trichoptera	Leptoceridae	Leptocerus	interruptus	0	1
+X255	x255	Trichoptera	Leptoceridae	Leptocerus	tineiformis	0	1
+X256	x256	Trichoptera	Leptoceridae	Mystacides	sp.	0	1
+X257	x257	Trichoptera	Leptoceridae	Oecetis	notata	0	1
+X258	x258	Trichoptera	Leptoceridae	Oecetis	ochracea	0	1
+X259	x259	Trichoptera	Leptoceridae	Oecetis	testacea	0	1
+X260	x260	Trichoptera	Limnephilidae	Anabolia	nervosa	0	1
+X261	x261	Trichoptera	Limnephilidae	Chaetopteryx	villosa villosa	0	1
+X262	x262	Trichoptera	Limnephilidae	Glyphotaelius	pellucidus	0	1
+X263	x263	Trichoptera	Limnephilidae	Halesus	radiatus	0	1
+X264	x264	Trichoptera	Limnephilidae	Limnephilidae	sp.	0	1
+X265	x265	Trichoptera	Limnephilidae	Limnephilus	affinis/incisus	0	1
+X266	x266	Trichoptera	Limnephilidae	Limnephilus	auricula	0	1
+X267	x267	Trichoptera	Limnephilidae	Limnephilus	bipunctatus	0	1
+X268	x268	Trichoptera	Limnephilidae	Limnephilus	decipiens	0	1
+X269	x269	Trichoptera	Limnephilidae	Limnephilus	flavicornis	0	1
+X270	x270	Trichoptera	Limnephilidae	Limnephilus	lunatus	0	1
+X271	x271	Trichoptera	Limnephilidae	Limnephilus	rhombicus	0	1
+X272	x272	Trichoptera	Limnephilidae	Limnephilus	stigma	0	1
+X273	x273	Trichoptera	Limnephilidae	Melampophylax	mucoreus	0	1
+X274	x274	Trichoptera	Limnephilidae	Mesophylax	impunctatus	0	1
+X275	x275	Trichoptera	Limnephilidae	Micropterna	nycterobia	0	1
+X276	x276	Trichoptera	Limnephilidae	Micropterna	lateralis/sequax	0	1
+X277	x277	Trichoptera	Limnephilidae	Micropterna	testacea	0	1
+X278	x278	Trichoptera	Limnephilidae	Pseudopsilopteryx	zimmeri	0	1
+X279	x279	Trichoptera	Phryganeidae	Phryganea	bipunctata	0	1
+X280	x280	Trichoptera	Phryganeidae	Agrypnia	varia	0	1
+X281	x281	Trichoptera	Polycentropodidae	Cyrnus	trimaculatus	0	1
+X282	x282	Trichoptera	Polycentropodidae	Holocentropus	stagnalis	0	1
+X283	x283	Trichoptera	Polycentropodidae	Plectrocnemia	conspersa	0	1
+X284	x284	Trichoptera	Polycentropodidae	Polycentropus	sp.	0	1
+X285	x285	Trichoptera	Polycentropodidae	Neureclipsis	bimaculata	0	1
+X286	x286	Trichoptera	Psychomyiidae	Lype	reducta	0	1
+X287	x287	Trichoptera	Psychomyiidae	Psychomyia	pusilla	0	1
+X288	x288	Trichoptera	Psychomyiidae	Tinodes	waeneri	0	1
+X289	x289	Trichoptera	Rhyacophilidae	Rhyacophila	dorsalis	0	1
+X290	x290	Trichoptera	Sericostomatidae	Sericostoma	personatum	0	1
+X291	x291	Turbellaria	Fam.	Gen.	sp.	0	0
+X292	x292	Turbellaria	Turbellaria	Dugesia/Planaria	sp.	0	0
+X293	x293	Turbellaria	Dugesiidae	Dugesia	tigrina	1	0
+X294	x294	Turbellaria	Dendroecellidae	Dendrocoelum	lacteum	0	0
+X295	x295	Turbellaria	Planariidae	Crenobia	alpina	0	0
+X296	x296	Turbellaria	Planariidae	Phagocata	vitta	0	0
+X297	x297	Turbellaria	Planariidae	Polycelis	sp.	0	0

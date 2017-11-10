@@ -1,0 +1,357 @@
+---
+title: "Merritt"
+author: "Pablo Timoner"
+date: "January 20, 2017"
+output: pdf_document
+---
+
+```{r global_options, echo=FALSE}
+### ATTENTION AU DEV()
+knitr::opts_chunk$set(fig.height=5.2, fig.width=5.9, dev='pdf',fig.path='Outputs/Merritt/')
+```
+
+
+
+```{r preparation, echo=FALSE, results='hide'}
+setwd("C:/Timoner/LEBA/Article/Code")
+library("ggplot2", lib.loc="~/R/win-library/3.4")
+library("ade4", lib.loc="~/R/win-library/3.4")
+library("vegan", lib.loc="~/R/win-library/3.4")
+library("gridExtra", lib.loc="~/R/win-library/3.4")
+
+## Load trait table
+T <- read.table("Tableau5.txt", header=TRUE)
+row.names(T) <- T[,1]
+T <- T[,-1]
+
+# Blocks tableau
+blocks <- c(4,5,7,6,10,5,4,3,2,8,5)
+names(blocks) <- c("curr","sapr","size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
+
+# # Seulement traits biologiques
+# T <- T[,-c(1:9)]
+# blocks <- c(7,6,10,5,4,3,2,8,5)
+# names(blocks) <- c("size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
+
+#Seul. traits plus importants:
+# T <- T[,c(10:32,47:59)]
+# blocks <- c(7,6,10,8,5)
+# names(blocks) <- c("size","locom","feeding","repr","resist")
+
+# Detail sampling
+S <- read.table("Sampling.txt", header=TRUE)
+S$date <- as.Date(S$date,format="%d.%m.%Y")
+S$date2 <- as.Date(S$date2,format="%d.%m.%Y")
+S1 <- S
+
+# Matrice des individus (Site x taxon)
+M <- read.table("Sampling_matrix.txt", header=TRUE)
+
+# Take off Chironomidae
+M <- M[,-110]
+T1 <- T[-110,]
+
+# Aggregation
+colmerg <- "statyear"
+colagname <- S1$statyear
+colag <-2
+
+M1 <- aggregate(M,list(colagname),sum)
+
+
+# make number of rows of sampling equal to Mg
+## Be careful to the column number (code or statyear, etc.)
+# for (i in 1:(nrow(S1)-1)){
+#   if (S1[i,colag] == S1[i+1,colag]){
+#     S1[i,colag] <- NA
+#   }
+# }
+# S1 <- subset(S1, colagname !="NA")
+
+## Much easier way !!
+S1 <- S1[!duplicated(S[,colag]),]
+
+# Aggregation of data changed the order of samples
+names(M1)[1] <- "sampcode"
+S1 <- merge(S1,M1,by.x=colmerg,by.y="sampcode")
+
+### Enlever des Sites
+
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+# ## Enlever seulement les nouveaux sites
+M1 <- M1[S1$chanstat %!in% c("LUISUpN","MOIRUpN","BEARDoN","ENILDoN"),-1]
+S1 <- S1[S1$chanstat %!in% c("LUISUpN","MOIRUpN","BEARDoN","ENILDoN"),1:16]
+T1 <- T1[-which(names(M1)%in%names(M1[apply(M1,2,sum)==0])),]
+M1 <- M1[,-which(names(M1)%in%names(M1[apply(M1,2,sum)==0]))]
+S1[] <- lapply(S1, function(x) if(is.factor(x)) factor(x) else x)
+
+S1$chanstat <- factor(S1$chanstat, levels=c("BEARUp","BEARDo","MOIRUp","MOIRDo","LUISUp","LUISDo","FOURUp","FOURDo","CHANUp","CHANDo","LUCEUp","LUCEDo","ENILUp","ENILDo"))
+
+## Prepare fuzzy
+T1 <- prep.fuzzy.var(T1,blocks)
+
+#Multiplication des matrices
+MT <- as.matrix(M1)%*%as.matrix(T1)
+MT <- as.data.frame(MT)
+
+```
+
+```{r Loop, echo=FALSE, warning=FALSE}
+
+### Calcul des métriques de Merritt (ne pas tenir compte de Drifter_ratio (num 5), mal calculé)
+
+FG <- list()
+X <- MT
+
+FG[[1]] <- as.vector(X[,26]/apply(X[,c(27:29)],1,sum))
+FG[[2]] <- as.vector(apply(X[,c(28:29)],1,sum)/(X[,27]))
+FG[[3]] <- as.vector(X[,30]/apply(X[,c(23:29,31:32)],1,sum))
+FG[[4]] <- as.vector(X[,44]/apply(X[,c(42:43)],1,sum))
+FG[[5]] <- as.vector(X[,17]/X[,18])
+FG[[6]] <- as.vector(X[,20]/apply(X[,c(17:19,21:22)],1,sum))
+FG[[7]] <- as.vector(apply(X[,c(23,28,29)],1,sum)/apply(X[,c(26,27)],1,sum))
+FG[[8]] <- as.vector(X[,21]/apply(X[,c(19,20,17,18)],1,sum))
+names(FG) <- c("Shredder_ratio","Collector_ratio","Predator_ratio","Voltinism_ratio","Drifter_ratio","Benthic_ratio","FFG_ratio","FHG_ratio")
+
+## Thresholds selon Merritt (visualisation graphique)
+# treshold <- c(0.375,0.5,0.75,1,0.6,0.5,0.6)
+
+#Our digit transformation function for labels
+scaleFUN <- function(x) sprintf("%.1f", x)
+
+## Loop sur chaque métrique pour comparaison entre années
+pos <- 0
+for(diver in FG){
+  
+  ## Enlever les infinis (si un dénominateur = 0 dans les calcul de métrique, peu probable)
+  inf <- all(is.infinite(diver)==FALSE)
+  if(inf==FALSE){
+    S2 <- S1[-which(is.infinite(diver)),]
+    diver <- diver[-which(is.infinite(diver))]
+  }else{
+    S2 <- S1
+  }
+  pos <- pos+1
+  print(names(FG)[pos])
+  dfdiv <- data.frame(Index=diver,Year=factor(S2$year))
+  names(dfdiv)[1] <- names(FG)[pos]
+  p <- ggplot(dfdiv, aes_string("Year", names(FG)[pos]))+ stat_boxplot(geom = "errorbar", width = 0.4)
+  p <- p + geom_boxplot() 
+  p <- p + theme_bw()
+  p <- p + scale_y_continuous(labels=scaleFUN)
+  p <- p + theme(axis.text.x=element_text(size=13),axis.title=element_text(size=13),axis.text.y=element_text(size=12))
+  # p <- p + geom_hline(aes(yintercept=treshold[pos]),linetype="dashed",size=0.3)
+  p <- ggplotGrob(p)
+  p$widths[3]  <- unit(0.3,"in")
+  grid.arrange(p)
+  # print(p)
+  wil <- pairwise.wilcox.test(diver,factor(S1$year),paired=TRUE,p.adjust.method = "none")
+  print(wil)
+}
+
+## Loop sur chaque métrique pour comparaison entre sites
+pos <- 0
+for(diver in FG){
+  inf <- all(is.infinite(diver)==FALSE)
+  if(inf==FALSE){
+    S2 <- S1[-which(is.infinite(diver)),]
+    diver <- diver[-which(is.infinite(diver))]
+  }else{
+    S2 <- S1
+  }
+  pos <- pos+1
+  print(names(FG)[pos])
+  dfdiv <- data.frame(Index=diver,Site=factor(S2$chanstat),Channel=factor(S2$channel))
+  # dfdiv$Site <- factor(dfdiv$Site, levels=c("BEARUp","BEARDo","MOIRUp","MOIRDo","LUISUp","LUISDo","FOURUp","FOURDo","CHANUp","CHANDo","LUCEUp","LUCEDo","ENILUp","ENILDo"))
+  names(dfdiv)[1] <- names(FG)[pos]
+  p <- ggplot(dfdiv, aes_string("Site", names(FG)[pos]))
+  p <- p + stat_boxplot(geom = "errorbar", width = 0.4)
+  p <- p + geom_boxplot(aes(fill=Channel))
+  p <- p + guides(fill=FALSE)
+  p <- p + theme_bw()
+  p <- p + scale_y_continuous(labels=scaleFUN)
+  p <- p + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5,size=13),axis.title=element_text(size=13),axis.text.y=element_text(size=12))
+  # p <- p + geom_hline(aes(yintercept=treshold[pos]),linetype="dashed",size=0.3)
+  p <- ggplotGrob(p)
+  p$widths[3]  <- unit(0.3,"in")
+  grid.arrange(p)
+  wil <- pairwise.wilcox.test(diver,factor(S2$chanstat),paired=TRUE,p.adjust.method = "none")
+  print(wil)
+}
+
+# Loop sur chaque lône et identification des tendances
+for(ch in levels(factor(S1$channel))){
+  # ch <- "MOIR"
+  posI <- 0
+  for(diver in FG){
+    # diver <- FG[[8]]
+    inf <- all(is.infinite(diver)==FALSE)
+    if(inf==FALSE){
+      S2 <- S1[-which(is.infinite(diver)),]
+      diver <- diver[-which(is.infinite(diver))]
+    }else{
+      S2 <- S1
+    }
+    posI <- posI+1
+    xl1 <- 0
+    xl2 <- max(diver)
+    
+    # Création de plusieurs listes pour stocker les données de chaque loop
+    ## Utile si l'on testait plusieurs méthodes de modélisation
+    ## Finalement, dans notre cas, pas nécessaire, mais je n'ai pas modifié le code
+    ## Je teste qu'une seule méthode, donc il n'y aura qu'un élément dans chaque liste.
+    
+    df <- list()
+    lr <- list()
+    pF <- list()
+    v <- list()
+    s <- list()
+    yfit <- list()
+    fit <- list()
+    RpVTab <- list()
+    pos <- 0
+    RpV <- NULL
+    
+    # Loop sur chaque site de la lône
+    for(i in levels(factor(S2$chanstat[S2$channel==ch]))){
+      # i <- "MOIRUp"
+      pos <- pos+1
+      S3 <- S2[S2$chanstat==i,]
+      div <- diver[S2$chanstat==i]
+      t <- as.numeric(S3$date)/10000
+      if(all(div>0)){
+        lm1 <- lm(div~t)
+        c1 <- coef(lm1)[[1]]
+        c2 <- coef(lm1)[[2]]
+        LM <- glm(div~t,family = gaussian(link="log"),start = c(c1,c2))
+        # LM <- glm(div~t,family = Gamma(link="log"))
+        suma <- summary(LM)
+        # print(suma)
+        df[1] <- 1
+        # lr[1] <- suma$adj.r.squared
+        # f <- suma$fstatistic
+        # pF[1] <- pf(f[1], f[2], f[3], lower=FALSE)
+        pF[1] <- suma$coefficients[2,4]
+        yf <- fitted.values(LM)
+        yfit[[1]] <- yf
+        v[1] <- max(yf)-min(yf)
+        s[[1]] <- suma
+      }
+      
+      
+      # LM <- lm(div~t)
+      # suma <- summary(LM)
+      # df[1] <- 1
+      # lr[1] <- suma$adj.r.squared
+      # # f <- suma$fstatistic
+      # # pF[1] <- pf(f[1], f[2], f[3], lower=FALSE)
+      # pF[1] <- suma$coefficients[2,4]
+      # yf <- fitted.values(LM)
+      # yfit[[1]] <- yf
+      # v[1] <- max(yf)-min(yf)
+      # s[[1]] <- suma
+      # 
+      # LM <- lm(div~poly(t,2))
+      # suma <- summary(LM)
+      # df[2] <- 2
+      # lr[2] <- suma$adj.r.squared
+      # co1 <- suma$coefficients[2,4]
+      # co2 <- suma$coefficients[3,4]
+      # if(all(co1<0.05,co2<0.05)){
+      #   pF[2] <- 0
+      # }else{
+      #   pF[2] <- 1
+      # }
+      # yf <- fitted.values(LM)
+      # yfit[[2]] <- yf
+      # v[2] <- max(yf)-min(yf)
+      # s[[2]] <- suma
+      # 
+      # if(all(diver>0)){
+      #   LM <- lm(log(div)~t)
+      #   suma <- summary(LM)
+      #   df[3] <- 3
+      #   co1 <- suma$coefficients[1,1]
+      #   co2 <- suma$coefficients[2,1]
+      #   yf <- exp(co1)*exp(t*co2)
+      #   lr[3] <- sum((yf-mean(div))^2)/sum((div-mean(div)^2))
+      #   yfit[[3]] <- exp(co1)*exp(t*co2)
+      #   pF[3] <- suma$coefficients[2,4]
+      #   v[3] <- max(yf)-min(yf)
+      #   s[[3]] <- suma
+      # }
+      
+      
+      # RpV <- data.frame(pValue=unlist(pF),adjR2=unlist(lr),deg=unlist(df),var=unlist(v))
+      
+      ## Dataframe avec la p-value, la méthode (numéro) (pas nécessaire dans notre cas), et
+      ## la différence entre la valeur max et min des fitted values (pas pris en compte dans ce cas)
+      RpV <- data.frame(pValue=unlist(pF),deg=unlist(df),var=unlist(v))
+      
+      ## On fixe le threshold de la p-value
+      RpV <- subset(RpV,pValue<=0.07)
+      
+      ## On regarde si on a une tendance ou pas
+      if(nrow(RpV)==0){
+        RpVTab[[pos]] <- NA
+        fit[[pos]] <- NA
+        
+      }else{
+        # RpV <- subset(RpV,adjR2==max(adjR2))
+        # RpV <- RpV[1,]
+        RpVTab[[pos]] <- RpV
+        print(s[[RpV$deg]])
+        fit[[pos]] <- yfit[[RpV$deg]]
+        
+        # print(RpVTab[[pos]])
+      }
+    }
+    
+    ## PLOT
+    FD <- diver[S2$channel==ch]
+    Year <- S2$date[S2$channel==ch]
+    Site <- S2$chanstat[S2$channel==ch]
+    dftest <- data.frame(FD,Year,Site)
+    names(dftest)[1] <- names(FG)[posI]
+    # Plot
+    p <- ggplot(dftest,aes_string(y=names(FG)[posI],x="Year",group="Site",color="Site",shape="Site"))+ylim(xl1,xl2)
+    p <- p + scale_shape_manual(values=1:nlevels(dftest$Site)) + geom_point() + geom_line(show.legend = FALSE,size=0.3)
+    # p <- p + scale_y_continuous(labels=scaleFUN)
+    p <- p + theme_bw()
+    # p <- p + geom_hline(aes(yintercept=treshold[posI]),linetype="dashed",size=0.3)
+    
+    ## On regarde si une tendance avait été enregistrée, auquel cas on la plot
+    for(k in 1:pos){
+      # rm(Er)
+      if(!is.na(RpVTab[k])){
+        print(RpVTab)[[k]]
+        name <- levels(factor(S2$chanstat[S2$channel==ch]))[k]
+        # name <- levels(factor(S2$chanstat[S2$channel==ch]))[1]
+        
+        ## utile si plusieurs méthodes, dans notre cas, seulement une méthode (deg=1)
+        if(RpVTab[[k]]$deg==1){
+          l1 <- subset(dftest,Site==name)
+          l2 <- fit[[k]]
+          df2 <- cbind(l1, L2=l2)
+          p <- p + stat_smooth(data=subset(dftest,Site==name), method='glm',formula = y~x, method.args=list(family=gaussian('log')), se = FALSE, linetype="dashed",size=0.3, show.legend = FALSE)
+          # p <- p + geom_line(data=df2,aes(y=L2,x=Year),linetype="dashed",size=0.3)
+          
+        }else if(RpVTab[[k]]$deg==2){
+          # p <- p + geom_smooth(data=subset(dftest,Site==name),method='lm',formula=y ~ poly(x,2), se = FALSE, linetype="dashed",size=0.3,show.legend = FALSE)
+          
+        }else if(RpVTab[[k]]$deg==3){
+          # p <- p + stat_smooth(data=subset(dftest,Site==name),method='lm',formula=y ~ x, se = FALSE, linetype="dashed",size=0.3,show.legend = FALSE)
+          
+        }else{
+          p <- p
+        }
+      }
+    }
+    cat("\n")
+    cat("\n")
+    print(p)  
+  }
+}
+
+```

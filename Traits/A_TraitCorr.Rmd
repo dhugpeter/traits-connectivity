@@ -1,0 +1,259 @@
+---
+title: "Traits_corr"
+author: "Pablo Timoner"
+date: "February 14, 2017"
+output: pdf_document
+---
+
+```{r global_options, echo=FALSE}
+knitr::opts_chunk$set(fig.height=5.2, fig.width=5.9, dev='cairo_pdf',fig.path='../../Memoire/Methodes/Codification/test/' )
+```
+
+```{r trcorr, echo=FALSE}
+# setwd("D:/Memoire/MEMOIRE/A Traits/Analyses")
+# library("ggplot2", lib.loc="~/R/win-library/3.2")
+# library("ade4", lib.loc="~/R/win-library/3.2")
+# library("vegan", lib.loc="C:/Program Files/R/R-3.2.5/library")
+
+setwd("D:/Pablo/Memoire/A Traits/Analyses")
+library("ade4", lib.loc="~/R/win-library/3.3")
+library("ggplot2", lib.loc="~/R/win-library/3.3")
+library("vegan", lib.loc="~/R/win-library/3.3")
+library("gdata", lib.loc="~/R/win-library/3.3")
+
+###### OBTENIR UNE MATRICE DES COEFFICIENTS RV#####
+
+# ## TABLEAU FINAL (current from Tachet)
+
+T <- read.table("Tableau4.txt", header=TRUE)
+
+#Enlever détail (source) si nécessaire
+T1 <- T[,-c(2,3,13,14,19,20,26, 27, 38, 39, 49, 50, 57, 58, 64, 65, 73, 74, 80, 81, 86, 87, 90, 91, 95, 96)]
+
+# Si la première colonne représente le nom des lignes
+row.names(T1) <- T1[,1]
+T1 <- T1[,-1]
+head(T1)
+
+
+# Definir les blocks de traits
+# Blocks traits
+blocks <- c(9,4,5,10,9,6,5,7,5,4,2,3,8)
+
+# ### TABLEAU INITIAL (current from Freshwater)
+# T <- read.table("Tableau3_FINAL.txt", header=TRUE)
+# T1 <- T[,-c(2,3,13,14,22,23,29,30,41,42,52,53,60,61,67,68,76,77,83,84,89,90,93,94,98,99)]
+# row.names(T1) <- T1[,1]
+# T1 <- T1[,-1]
+# 
+# # Repartir "ind" dans current preference
+# # 16 eme position (10-15)
+# for(i in 1:dim(T1)[1]){
+#   if(T1[i,16]!=0){
+#     T1[i,10:15] <- 1
+#   }
+# }
+# T1 <- T1[,-16]
+# blocks <- c(9,6,5,10,9,6,5,7,5,4,2,3,8)
+
+# ## Tableau seulement Tachet
+# T <- read.table("TableauSeulTachet_test.txt", header=TRUE)
+# row.names(T) <- T[,1]
+# T1 <- T[,-1]
+# 
+# #Blocks tableau seul. Tachet
+# blocks <- c(9,4,5,7,9,8,5,7,5,4,2,3,8)
+
+#Vérifier que la somme est correcte
+dim(T1)[2]==sum(blocks)
+
+# Donner un nom a chaque block
+names(blocks) <- c("substrate","current","saprobity","feeding_type","food","locomotion",
+                   "respiration","max_size","resistance","dispersal","cycle_duration","nb_cycle",
+                   "reproduction")
+
+names(T1)
+## ENLEVER CERTAINS TAXONS
+
+S <- read.table("Sampling.txt", header=TRUE)
+
+# Matrice des individus (station x taxon)
+M <- read.table("Sampling_matrix.txt", header=TRUE)
+
+# Take off Chironomidae
+M <- M[,-110]
+T1 <- T1[-110,]
+
+## ENLEVER LES TAXONS QUI SONT SEULEMENT DANS LES NOUVELLES STATIONS
+# Detail sampling
+'%!in%' <- function(x,y)!('%in%'(x,y))
+M <- M[S$chanstat %!in% c("LUISUpN","MOIRUpN","BEARDoN","ENILDoN"),]
+T1 <- T1[-which(names(M)%in%names(M[apply(M,2,sum)==0])),]
+
+#### STATIS
+T2 <- prep.fuzzy.var(T1,blocks)
+FCA <- dudi.fca(T2,scannf = FALSE, nf = 2)
+
+kt <- ktab.data.frame(FCA$tab,FCA$blo,w.col=FCA$cw)
+st <- statis(kt,scannf = FALSE, nf = 2)
+
+s <- s.corcircle(st$RV.coo,clab=0.8,label = names(blocks))
+print(s)
+# T2 <- prep.fuzzy.var(T1,blocks)
+# Assigner la table...
+tb <- T1
+# ... les blocks
+bl <- blocks
+NumTr <- length(bl)
+# Créer une matrice vide selon le nombre de traits
+MRV <- matrix(rep(0,NumTr^2),NumTr,NumTr)
+rownames(MRV) <- names(bl)
+colnames(MRV) <- names(bl)
+# Premier loop sur chaque trait..
+a <- 1
+for(i in 1:NumTr){
+  # i=1
+  bl1 <- a-1+bl[i]
+  t1 <- tb[,c(a:bl1)]
+  
+  # w1 <- t1
+  w1 <- prep.fuzzy.var(t1,bl[i])
+  a <- a+bl[i]
+  d1 <- dudi.fca(w1, scannf = FALSE, nf = 2)
+  b <- 1
+  #...qui va être analysé avec chaque trait (coinertie)
+  for(j in 1:NumTr){
+    # b=10
+    # j=2
+    bl2 <- b-1+bl[j]
+    t2 <- tb[,c(b:bl2)]
+    
+    # w2 <- t2
+    w2 <- prep.fuzzy.var(t2,bl[j])
+    
+    b <- b+bl[j]
+    d2 <- dudi.fca(w2, scannf = FALSE, nf = 2)
+    CoI <- coinertia(d1,d2, scannf = FALSE)
+    RvTest <- randtest(CoI, nrepet=1000)
+    if(RvTest$pvalue < 0.05){
+      MRV[i,j] <- CoI$RV
+    }else{
+      MRV[i,j] <- 9999
+      #MRV[i,j] <- CoI$RV
+    }
+  }
+}
+
+
+# Formater la matrice
+MRV1 <- MRV
+
+CoeffVal <- lowerTriangle(MRV1, diag=FALSE)
+CoeffVal[CoeffVal==9999]<- NA
+# +70/78
+# Histogramme des coefficients
+# hist(CoeffVal, breaks=30 )
+
+
+# ggplot
+
+data <- data.frame(CoeffVal)
+m <- ggplot(data, aes(x = CoeffVal))
+m <- m + theme_bw()
+m <- m + geom_histogram(colour = "black", fill = "black", binwidth = 0.01) + ylab("Frequency") + xlab("RV Coefficent") 
+m <- m + annotate("text", x=0.428, y=3.07, label= "feeding type - food", angle=90)
+m <- m + annotate("text", x=0.387, y=3.71, label= "substrate - current velocity", angle=90)
+print(m)
+```
+
+
+```{r compare,echo=FALSE}
+# ##################################################################
+# 
+# ###### COMPARAISON FRESHWATER VS TACHET #########
+# 
+# # ### TABLEAU INITIAL
+# T <- read.table("Tableau3_FINAL.txt", header=TRUE)
+# T1 <- T[,-c(2,3,13,14,22,23,29,30,41,42,52,53,60,61,67,68,76,77,83,84,89,90,93,94,98,99)]
+# row.names(T1) <- T1[,1]
+# T1 <- T1[,-1]
+# 
+# ## ENLEVER CERTAINS TAXONS
+# 
+# S <- read.table("Sampling.txt", header=TRUE)
+# 
+# # Matrice des individus (station x taxon)
+# M <- read.table("Sampling_matrix.txt", header=TRUE)
+# 
+# # Take off Chironomidae
+# M <- M[,-110]
+# T1 <- T1[-110,]
+# 
+# ## ENLEVER LES TAXONS QUI SONT SEULEMENT DANS LES NOUVELLES STATIONS
+# # Detail sampling
+# '%!in%' <- function(x,y)!('%in%'(x,y))
+# M <- M[S$chanstat %!in% c("LUISUpN","MOIRUpN","BEARDoN","ENILDoN"),]
+# T1 <- T1[-which(names(M)%in%names(M[apply(M,2,sum)==0])),]
+# 
+# 
+# # Repartir "ind" dans current preference
+# # 16 eme position (10-15)
+# for(i in 1:dim(T1)[1]){
+#   if(T1[i,16]!=0){
+#     T1[i,10:15] <- 1
+#   }
+# }
+# T1 <- T1[,-16]
+# 
+# # ## TABLEAU TACHET
+# T <- read.table("TableauSeulTachet_test.txt", header=TRUE)
+# row.names(T) <- T[,1]
+# T2 <- T[,-1]
+# 
+# ## ENLEVER CERTAINS TAXONS
+# 
+# S <- read.table("Sampling.txt", header=TRUE)
+# 
+# # Matrice des individus (station x taxon)
+# M <- read.table("Sampling_matrix.txt", header=TRUE)
+# 
+# # Take off Chironomidae
+# M <- M[,-110]
+# T2 <- T2[-110,]
+# 
+# ## ENLEVER LES TAXONS QUI SONT SEULEMENT DANS LES NOUVELLES STATIONS
+# # Detail sampling
+# '%!in%' <- function(x,y)!('%in%'(x,y))
+# M <- M[S$chanstat %!in% c("LUISUpN","MOIRUpN","BEARDoN","ENILDoN"),]
+# T2 <- T2[-which(names(M)%in%names(M[apply(M,2,sum)==0])),]
+# 
+# ##Current preference en tenant compte de Tachet ou de Fresh (correlation)
+# q1 <- T1[,c(10:15)]
+# w1 <- prep.fuzzy.var(q1,6)
+# d1 <- dudi.fca(w1, scannf = FALSE, nf = 2)
+# q2 <- T2[,c(10:13)]
+# w2 <- prep.fuzzy.var(q2,4)
+# d2 <- dudi.fca(w2, scannf = FALSE, nf = 2)
+# CoI <- coinertia(d1,d2, scannf = FALSE)
+# CoI
+# 
+# ##Feeding type en tenant compte de Tachet ou de Fresh (correlation)
+# q1 <- T1[,c(21:30)]
+# w1 <- prep.fuzzy.var(q1,10)
+# d1 <- dudi.fca(w1, scannf = FALSE, nf = 2)
+# q2 <- T2[,c(19:25)]
+# w2 <- prep.fuzzy.var(q2,7)
+# d2 <- dudi.fca(w2, scannf = FALSE, nf = 2)
+# CoI <- coinertia(d1,d2, scannf = FALSE)
+# CoI
+# 
+# ##Locomotion en tenant compte de Tachet ou de Fresh (correlation)
+# q1 <- T1[,c(40:45)]
+# w1 <- prep.fuzzy.var(q1,6)
+# d1 <- dudi.fca(w1, scannf = FALSE, nf = 2)
+# q2 <- T2[,c(35:42)]
+# w2 <- prep.fuzzy.var(q2,8)
+# d2 <- dudi.fca(w2, scannf = FALSE, nf = 2)
+# CoI <- coinertia(d1,d2, scannf = FALSE)
+# CoI
+```
