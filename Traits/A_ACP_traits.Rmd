@@ -1,0 +1,99 @@
+---
+title: "FPCA_Traits"
+output: pdf_document
+
+---
+```{r global_options, echo=FALSE}
+### ATTENTION AU DEV()
+knitr::opts_chunk$set(fig.height=5.2, fig.width=5.9, dev='pdf',fig.path='../../Memoire/Results/img/acp_traits/')
+```
+
+```{r gl, echo=FALSE}
+setwd("C:/Timoner/LEBA/Article/Scripts_Tableaux")
+library("ade4", lib.loc="~/R/win-library/3.4")
+
+T <- read.table("Tableau5.txt", header=TRUE)
+row.names(T) <- T[,1]
+T <- T[,-1]
+# Blocks tableau
+blocks <- c(4,5,7,6,10,5,4,3,2,8,5)
+names(blocks) <- c("curr","sapr","size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
+
+# Ratio matrix
+T1 <- prep.fuzzy.var(T,blocks)
+
+# Detail sampling
+S1 <- read.table("Sampling.txt", header=TRUE)
+
+
+# Matrice des individus (station x taxon)
+M <- read.table("Sampling_matrix.txt", header=TRUE)
+
+# Take off Chironomidae
+M <- M[,-110]
+T1 <- T1[-110,]
+
+# Aggregation
+colmerg <- "statyear"
+colagname <- S1$statyear
+colag <-2
+M1 <- aggregate(M,list(colagname),sum)
+
+S1 <- S1[!duplicated(S1[,colag]),]
+
+# Aggregation of data changed the order of samples (if needed)
+names(M1)[1] <- "sampcode"
+S1 <- merge(S1,M1,by.x=colmerg,by.y="sampcode")
+
+#### Enelver certaines stations
+
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+# ## Enlever seulement les nouvelles stations
+M1 <- M1[S1$chanstat %!in% c("LUISUpN","MOIRUpN","BEARDoN","ENILDoN"),-1]
+S1 <- S1[S1$chanstat %!in% c("LUISUpN","MOIRUpN","BEARDoN","ENILDoN"),1:16]
+T1 <- T1[-which(names(M1)%in%names(M1[apply(M1,2,sum)==0])),]
+M1 <- M1[,-which(names(M1)%in%names(M1[apply(M1,2,sum)==0]))]
+
+#Multiplication des matrices
+MT <- as.matrix(M1)%*%as.matrix(T1)
+MT <- as.data.frame(MT)
+
+MT <-prep.fuzzy.var(as.data.frame(MT),blocks)
+## FPCA...site ordination
+FPCA <- dudi.fpca(MT, scannf = FALSE, nf = 2)
+coul <- c("firebrick","firebrick","darkgreen","darkgreen","navy","navy","mediumorchid4","mediumorchid4", "orange","orange","darkslategray4","darkslategray4","orange3","orange3")
+s.class(FPCA$li,factor(S1$chanstat),clabel=0.8,col=coul, cstar=1)
+ad <- add.scatter.eig(FPCA$eig,posi="bottomright",xax=1,yax=2,ratio=0.25)
+print(ad)
+
+
+## Define y-xlim 
+xl1 <- min(FPCA$co[,1])*1.4
+xl2 <- max(FPCA$co[,1])*1.4
+yl1 <- min(FPCA$co[,2])*1.4
+yl2 <- max(FPCA$co[,2])*1.4
+
+sa <- s.arrow(FPCA$co,clabel = 1.2,xlim=c(xl1,xl2),ylim=c(yl1,yl2))
+print (sa)
+
+## Zoom on each trait
+
+for(j in 1:length(blocks)){
+  # Number of categories
+  bl <- blocks[j]
+  # Look for the first and the last column (in order to subset)
+  if(j!=1){
+    bl0 <- (sum(blocks[1:(j-1)])+1)
+  }else{
+    bl0 <- 1
+  }
+  bl1 <- bl0+blocks[j]-1
+  s.arrow(FPCA$co[bl0:bl1,],clabel=1.4,xlim=c(xl1,xl2),ylim=c(yl1,yl2))
+  print(names(bl))
+}
+print("Inertia of traits in the FPCA.")
+print(FPCA$inertia)
+
+```
+
