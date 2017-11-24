@@ -5,7 +5,7 @@ output: pdf_document
 ---
 ```{r global_options, echo=FALSE}
 ### ATTENTION AU DEV()
-knitr::opts_chunk$set(fig.height=5.2, fig.width=5.9, dev='pdf',fig.path='../figures')
+knitr::opts_chunk$set(fig.height=5.2, fig.width=5.9, dev='pdf',fig.path='figures/')
 ```
 
 ```{r gl, echo=FALSE}
