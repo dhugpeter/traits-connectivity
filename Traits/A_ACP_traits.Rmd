@@ -5,11 +5,11 @@ output: pdf_document
 ---
 ```{r global_options, echo=FALSE}
 ### ATTENTION AU DEV()
-knitr::opts_chunk$set(fig.height=5.2, fig.width=5.9, dev='pdf',fig.path='../../Memoire/Results/img/acp_traits/')
+knitr::opts_chunk$set(fig.height=5.2, fig.width=5.9, dev='pdf',fig.path='../figures')
 ```
 
 ```{r gl, echo=FALSE}
-setwd("C:/Timoner/LEBA/Article/Scripts_Tableaux")
+#setwd("C:/Timoner/LEBA/Article/Scripts_Tableaux")
 library("ade4", lib.loc="~/R/win-library/3.4")
 
 T <- read.table("Tableau5.txt", header=TRUE)
