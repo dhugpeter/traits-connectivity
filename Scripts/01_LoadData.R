@@ -4,7 +4,7 @@
 setwd("C:/Timoner/LEBA/Article/Tableaux")
 
 ## Load full data table
-fullData <- read.table("01_Abund_Trait_Data.csv",header=TRUE,sep=',')
+fullData <- read.table("../Tables/01_Abund_Trait_Data.csv",header=TRUE,sep=',')
 
 ## Extract trait data
 traitData <- fullData[,6:64]
