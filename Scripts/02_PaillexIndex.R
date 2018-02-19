@@ -7,7 +7,7 @@ setwd("C:/Timoner/LEBA/Article/Tableaux")
 library(ade4)
 
 ## Load environmental table
-env <- read.table("env_variables.txt",header=TRUE)
+env <- read.table("../Tables/env_variables.txt",header=TRUE)
 
 ## PCA on substrate diversity, submerged vegetation, conductance and organic matter
 envPCA <- dudi.pca(env[,3:6],scannf=FALSE,nf = 2)
