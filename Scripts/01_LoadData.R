@@ -19,3 +19,9 @@ colnames(abundData) <- fullData[,1]
 if(ncol(abundData)==nrow(traitData)){
   message("Ready !")
 }
+
+## Select years
+# Retrieve years from rownames
+year <- as.numeric(substr(rownames(abundData),nchar(rownames(abundData))-3,nchar(rownames(abundData))-2))
+# Subset (for instance > 6 if we want years from 2007)
+abundData <- abundData[year>6,]
