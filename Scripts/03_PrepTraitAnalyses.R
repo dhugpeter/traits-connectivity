@@ -6,8 +6,10 @@
 siteYear <- substr(rownames(abundData),1,nchar(rownames(abundData))-2)
 # Aggregate abundance data
 aggData <- aggregate(abundData,list(siteYear),sum)
-names(aggData)[1] <- "SiteYear"
-Ab <- aggData
+# SiteYear in the right order
+siteYear <- aggData[,1]
+# Only abundance data
+Ab <- aggData[,-1]
 
 ## Prepare the trait data
 # Blocks of trait table
