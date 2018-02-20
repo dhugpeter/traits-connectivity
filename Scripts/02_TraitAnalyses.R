@@ -4,6 +4,9 @@
 
 ## tr and ab objects are needed (01_LoadData.R)
 
+## Required library
+library(ade4)
+
 ###################### FUNCTIONAL DIVERSITY ########################
 
 ## Functional distance between taxa
