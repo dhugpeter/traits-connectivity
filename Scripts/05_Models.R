@@ -23,3 +23,13 @@ plot(expl_b~pred_b,pch=16)
 abline(lm(expl_b~pred_b),col="red")
 summary(lm(expl_b~pred_b))
 
+########## TO GENERATE A REPORT WITH ALL THE INDICES/METRICS #######
+
+## Create a list with all indices/metrics to generate a report
+# Retrieve the lisf of metrics from Merritt
+indLst <- Merritt
+# Add the diversity index
+indLst[["RaoDiv"]] <- raoDiv
+
+## Generate the report
+rmarkdown::render("Report_Paillex_index.Rmd")
