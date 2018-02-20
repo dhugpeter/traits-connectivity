@@ -32,4 +32,4 @@ indLst <- Merritt
 indLst[["RaoDiv"]] <- raoDiv
 
 ## Generate the report
-rmarkdown::render("Report_Paillex_index.Rmd")
+rmarkdown::render("xx_Report_Paillex_index.Rmd")
