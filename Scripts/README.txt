@@ -1,4 +1,4 @@
-01_LoadData.R => load the abundance and trait data, select the years, aggragation, etc.
+01_LoadData.R => load the abundance and trait data, select the years, aggregation, etc.
 02_TraitAnalyses.R => prepare trait information, calculate diversity index, metrics from Merritt, etc.
 03_PaillexIndex.R => calculate the connectivity index from Paillex
 04_..... .R => calculate hydrological indices from Pierre (??)
