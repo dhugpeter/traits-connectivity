@@ -2,13 +2,14 @@
 ### LOAD ABUNDANCE AND TRAIT TABLE AND PREPARE DATA FOR ANALYSES ####
 #####################################################################
 
+
+##Load necessary packages
+library(ade4)
+
 ###################### LOAD THE DATA #################################
 
-## Set working directory
-setwd("C:/Timoner/LEBA/Article/GitHub/Scripts")
-
 ## Load full data table
-fullData <- read.table("../Tables/01_Abund_Trait_Data.csv",header=TRUE,sep=',')
+fullData <- read.table("./Tables/01_Abund_Trait_Data.csv",header=TRUE,sep=',')
 
 ## Extract trait data
 names(fullData)
