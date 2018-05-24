@@ -1,0 +1,40 @@
+---
+title: "Report: index from Paillex"
+author: "Pablo Timoner"
+date: "February 20, 2018"
+output: html_document
+---
+
+<!-- CAUTION -->
+<!-- This markdown has to be knited from the 05_Models.R script -->
+<!-- CAUTION -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Relationships between functional indices/metrics and the connectivity index from Paillex were obtained though simple linear regressions. 
+
+```{r paillex, echo=FALSE}
+## Set the explained variable
+for(i in 1:length(indLst)){
+  expl <- indLst[[i]]
+  name <- names(indLst)[i]
+  
+  # ## Plot and simple linear regression without removing outlier
+  # plot(expl~pred,pch=16)
+  # abline(lm(expl~pred),col="red")
+  # summary(lm(expl~pred))
+  
+  ## Remove outliers from explained variable (lines from predictor variable have to be removed as well)
+  pred_b <- pred[!expl>quantile(expl,probs=0.75)+1.5*IQR(expl) & !expl<quantile(expl,probs=0.25)-1.5*IQR(expl)]
+  expl_b <- expl[!expl>quantile(expl,probs=0.75)+1.5*IQR(expl) & !expl<quantile(expl,probs=0.25)-1.5*IQR(expl)]
+  
+  ## Plot and simple linear regression after removing outliers
+  plot(expl_b~pred_b,pch=16,ylab=name,xlab="Connectivity index (Paillex)")
+  abline(lm(expl_b~pred_b),col="red")
+  print(summary(lm(expl_b~pred_b)))
+
+}
+
+```
