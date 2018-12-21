@@ -89,11 +89,11 @@ for(type in c("trait","tax")){
     ab <- fauna[,6:ncol(fauna)]
   }
   ab <- t(ab)
-  ## Samplings
+  ## Samplings + ordering
   ab <- ab[match(samp,rownames(ab)),]
   ## Retrieve taxon codes for column names
   colnames(ab) <- taxon$Code
-  rownames(ab) <- NULL
+  rownames(ab) <- NULL # remet les num??ros de ligne
   ## Taxa with 0 occurence have to be removed (it may happen with the year filter)
   taxToRm <- as.character(taxon$Code[apply(ab,2,sum)==0])
   ## Other taxa to be removed like the Chironomidae ?
@@ -140,8 +140,7 @@ nrow(data.taxo[["abundance"]])==nrow(data.env[["hydro"]])
 # Take out some trait categories (optional); if so, be careful with the blocks of trait table
 trToRm <- c("ves")
 trToRm <- NULL
-data.traits$values <- data.traits$values[,!(colnames(data.traits$values) %in% trToRm)]
-tr <- data.traits$values
+tr <- data.traits$values[,!(colnames(data.traits$values) %in% trToRm)]
 
 ## Blocks of trait table
 colnames(data.traits$values)
@@ -149,6 +148,7 @@ blocks <- c(4,5,7,6,10,5,4,3,2,8,5)
 names(blocks) <- c("curr","sapr","size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
 
 ## Prepare trait fuzzy table
+library(ade4)
 tr <- prep.fuzzy.var(tr,blocks)
 
 ######################################################
