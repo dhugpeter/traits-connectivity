@@ -140,14 +140,14 @@ nrow(data.taxo[["abundance"]])==nrow(data.env[["hydro"]])
 ######################################################
 ## Prepare trait matrix
 # Take out some trait categories (optional); if so, be careful with the blocks of trait table
-trToRm <- c("ves")
-# trToRm <- NULL
+# trToRm <- c("ves")
+trToRm <- NULL
 tr <- data.traits$values[,!(colnames(data.traits$values) %in% trToRm)]
 
 ## Blocks of trait table
 colnames(tr)
-# blocks <- c(4,5,7,6,10,5,4,3,2,8,5)
-blocks <- c(4,5,7,6,10,4,4,3,2,8,5)
+blocks <- c(4,5,7,6,10,5,4,3,2,8,5)
+# blocks <- c(4,5,7,6,10,4,4,3,2,8,5)
 # blocks <- c(7,6,10,4,4,3,2,8,5)
 names(blocks) <- c("curr","sapr","size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
 # names(blocks) <- c("size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
@@ -166,22 +166,22 @@ names(blocks) <- c("curr","sapr","size","locom","feeding","resp","disp","nbcycle
 
 ## To 1-0
 # coun <- NULL
-for(i in 1:nrow(tr)){
-  for(j in c(1:11)){
-    if(j==1){
-      bl1 <-1
-    }else{
-      bl1 <- bl2+1
-    }
-    bl2 <- bl1+blocks[j]-1
-    maxV <-  max(tr[i,bl1:bl2])
-    tr[i,bl1:bl2][tr[i,bl1:bl2]==maxV] <- 1
-    tr[i,bl1:bl2][tr[i,bl1:bl2]!=1] <- 0
-    
-    # tr[i,bl1:bl2][tr[i,bl1:bl2]>=0.5] <- 1
-    # tr[i,bl1:bl2][tr[i,bl1:bl2]<0.5] <- 0
-  }
-}
+# for(i in 1:nrow(tr)){
+#   for(j in c(1:11)){
+#     if(j==1){
+#       bl1 <-1
+#     }else{
+#       bl1 <- bl2+1
+#     }
+#     bl2 <- bl1+blocks[j]-1
+#     maxV <-  max(tr[i,bl1:bl2])
+#     tr[i,bl1:bl2][tr[i,bl1:bl2]==maxV] <- 1
+#     tr[i,bl1:bl2][tr[i,bl1:bl2]!=1] <- 0
+#     
+#     # tr[i,bl1:bl2][tr[i,bl1:bl2]>=0.5] <- 1
+#     # tr[i,bl1:bl2][tr[i,bl1:bl2]<0.5] <- 0
+#   }
+# }
 
 ## Prepare trait fuzzy table
 # tr <- prep.fuzzy.var(tr,blocks,row.w = wei)
