@@ -9,7 +9,7 @@ knitr::opts_chunk$set(fig.height=5.2, fig.width=5.9, dev='pdf',fig.path='Outputs
 ```
 
 ```{r preparation, echo=FALSE, results="hide"}
-setwd("C:/Timoner/LEBA/Article/Code")
+#setwd("C:/Timoner/LEBA/Article/Code")
 library("ggplot2", lib.loc="~/R/win-library/3.4")
 library("ade4", lib.loc="~/R/win-library/3.4")
 library("vegan", lib.loc="~/R/win-library/3.4")
@@ -100,17 +100,17 @@ labels(distFCA) -> names(M1)
 # attributes(M2) <- attributes(M1)
 M2 <- M1
 
-## Functional diversity (avec windows peut planter si le nombre d'axes conservés est trop élevé, dans ce cas
-## j'en ai gardé 10)
-## voir package "FD" J'ai utilisé la fonction dbFD pour FRic et FEVe
+## Functional diversity (avec windows peut planter si le nombre d'axes conserv?s est trop ?lev?, dans ce cas
+## j'en ai gard? 10)
+## voir package "FD" J'ai utilis? la fonction dbFD pour FRic et FEVe
 fd <- dbFD(distFCA,M2,m=10)
 
-## Utilisé dpcoa pour Rao et RaoDis
+## Utilis? dpcoa pour Rao et RaoDis
 fd2 <- dpcoa(M2,distFCA,scannf = FALSE,nf=2)
 beta <- betadisper(fd2$RaoDis,S1$year)
 boxplot(beta)
 
-## Pour normalisé les valeurs de FRic entre 0 et 1
+## Pour normalis? les valeurs de FRic entre 0 et 1
 tr <- function(x){(x-min(x))/(max(x)-min(x))}
 fd$FRic <- tr(fd$FRic)
 
@@ -123,7 +123,7 @@ scaleFUN <- function(x) sprintf("%.1f", x)
 
 ```{r dgl, echo=FALSE}
 
-## Loop sur chaque indice pour comparaison entre années
+## Loop sur chaque indice pour comparaison entre ann?es
 
 pos <- 0
 for(diver in indices){
@@ -163,7 +163,7 @@ for(diver in indices){
 ```
 
 ```{r dst, echo=FALSE}
-# Loop sur chaque lône et identification des tendances
+# Loop sur chaque l?ne et identification des tendances
 
 indices <- list(FRic=fd$FRic,FEve=fd$FEve,RaoDiv=fd2$RaoDiv)
 for(ch in levels(factor(S1$channel))){
@@ -183,7 +183,7 @@ for(ch in levels(factor(S1$channel))){
       div <- diver[S1$chanstat==i]
       print(i)
       
-      ## Selon les type de valeurs, modélisation différente (binomial ou gaussian)
+      ## Selon les type de valeurs, mod?lisation diff?rente (binomial ou gaussian)
       if(posI!=3){
         y1 <- div
         x1 <- as.numeric(S2$date)/1000
@@ -235,7 +235,7 @@ for(ch in levels(factor(S1$channel))){
     p <- p + scale_shape_manual(values=1:nlevels(dftest$Site)) + geom_point() + geom_line(show.legend = FALSE,size=0.3)
     p <- p + theme_bw()
     
-    ## On regarde si une tendance avait été enregistrée, auquel cas on la plot
+    ## On regarde si une tendance avait ?t? enregistr?e, auquel cas on la plot
     for(k in 1:pos){
       # rm(Er)
       if(!is.na(fit[k])){
