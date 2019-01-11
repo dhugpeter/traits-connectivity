@@ -8,6 +8,7 @@
 library(ade4)
 library(vegan)
 library(rstudioapi)
+library(FD)
 
 ## Set working directory
 current <- dirname(getSourceEditorContext()$path)
@@ -40,6 +41,7 @@ rmTaxName <- "Chironomidae"
 # Load samplings for which we have hydro information
 hydro <- read.csv("hydro_data.csv",header = TRUE, stringsAsFactors = FALSE)
 samp.hydro <- hydro$ID
+# samp.hydro <- samp.hydro[grepl("_Sp",samp.hydro)]
 
 # Load samplings for which we have fauna information
 fauna <- read.csv("fauna_tax.csv",header=TRUE,stringsAsFactors = FALSE)
@@ -89,11 +91,11 @@ for(type in c("trait","tax")){
     ab <- fauna[,6:ncol(fauna)]
   }
   ab <- t(ab)
-  ## Samplings + ordering
+  ## Samplings
   ab <- ab[match(samp,rownames(ab)),]
   ## Retrieve taxon codes for column names
   colnames(ab) <- taxon$Code
-  rownames(ab) <- NULL # remet les num??ros de ligne
+  rownames(ab) <- NULL
   ## Taxa with 0 occurence have to be removed (it may happen with the year filter)
   taxToRm <- as.character(taxon$Code[apply(ab,2,sum)==0])
   ## Other taxa to be removed like the Chironomidae ?
@@ -139,36 +141,126 @@ nrow(data.taxo[["abundance"]])==nrow(data.env[["hydro"]])
 ## Prepare trait matrix
 # Take out some trait categories (optional); if so, be careful with the blocks of trait table
 trToRm <- c("ves")
-trToRm <- NULL
+# trToRm <- NULL
 tr <- data.traits$values[,!(colnames(data.traits$values) %in% trToRm)]
 
 ## Blocks of trait table
-colnames(data.traits$values)
-blocks <- c(4,5,7,6,10,5,4,3,2,8,5)
+colnames(tr)
+# blocks <- c(4,5,7,6,10,5,4,3,2,8,5)
+blocks <- c(4,5,7,6,10,4,4,3,2,8,5)
+# blocks <- c(7,6,10,4,4,3,2,8,5)
 names(blocks) <- c("curr","sapr","size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
+# names(blocks) <- c("size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
+# tr <- tr[,-c(1:9)]
+# rmTr <- c(1,2,3,11)
+# blocks <- blocks[-rmTr]
+# names(tr)
+# tr <- prep.fuzzy.var(tr[,-c(1:16,55:59)],blocks)
 
 ## Prepare trait fuzzy table
-library(ade4)
+# wei <- NULL
+# for(k in 1:nrow(tr)){
+#   wei <- c(wei,length(tr[k,][tr[k,]==0]))
+# }
+
+
+## To 1-0
+# coun <- NULL
+for(i in 1:nrow(tr)){
+  for(j in c(1:11)){
+    if(j==1){
+      bl1 <-1
+    }else{
+      bl1 <- bl2+1
+    }
+    bl2 <- bl1+blocks[j]-1
+    maxV <-  max(tr[i,bl1:bl2])
+    tr[i,bl1:bl2][tr[i,bl1:bl2]==maxV] <- 1
+    tr[i,bl1:bl2][tr[i,bl1:bl2]!=1] <- 0
+    
+    # tr[i,bl1:bl2][tr[i,bl1:bl2]>=0.5] <- 1
+    # tr[i,bl1:bl2][tr[i,bl1:bl2]<0.5] <- 0
+  }
+}
+
+## Prepare trait fuzzy table
+# tr <- prep.fuzzy.var(tr,blocks,row.w = wei)
 tr <- prep.fuzzy.var(tr,blocks)
 
 ######################################################
 ### Functional diversity
 ## Functional distances between taxa
-fca.traits <- dudi.fca(tr,scannf=FALSE,nf=5)
+fca.traits <- dudi.fca(tr,scannf=FALSE,nf=50)
 fca.dist <- dist.dudi(fca.traits)
+# rrao <- rare_Rao(as.data.frame(t(as.matrix(data.traits$abundance))),fca.dist,sim = TRUE,resampling = 20)
+# data.div[["rrao"]] <- rrao[,1]
 
 ## Rao diversity
-rao <- dpcoa(data.traits$abundance,fca.dist,scannf = FALSE,nf=2)
-data.div[["rao"]] <- rao$RaoDiv
+# rao <- dpcoa(data.traits$abundance,fca.dist,scannf = FALSE,nf=2)
+# data.div[["rao"]] <- rao$RaoDiv
+labels(fca.dist) -> names(data.traits$abundance)
+
+# sampleSize <- min(apply(data.traits$abundance,1,sum))
+# rar.ab <- rrarefy(data.traits$abundance,20)
+# newSampl <- colSums(rar.ab)>0
+# rar.ab <- rar.ab[,newSampl]
+# newDist <- as.dist(as.matrix(fca.dist)[newSampl,newSampl])
+# 
+# fd$RaoQ
+# 
+# 
+# fd <- dbFD(newDist,rar.ab,m=10)
+# fd$FRic
+
+fd <- dbFD(fca.dist,data.traits$abundance,w.abun = TRUE,m=20)
+
+data.div[["FDis"]] <- fd$FDis
+data.div[["FRic"]] <- fd$FRic
+data.div[["FEve"]] <- fd$FEve
+data.div[["Rao"]] <- fd$RaoQ
 
 ######################################################
 ### Rarefied taxonomic richness
 sampleSize <- min(apply(data.taxo$abundance,1,sum))
-# sampleSize <- 50
-data.div[["rich"]] <- rarefy(data.taxo$abundance,sample=sampleSize,MARGIN=1)
+range(rowSums(data.taxo$abundance))
+# sampleSize <- 100
+data.div[["rarRich"]] <- rarefy(data.taxo$abundance,sample=sampleSize,MARGIN=1)
+alpha <- ifelse(data.taxo$abundance>0,1,0)
+data.div[["rawRich"]] <- apply(alpha,1,sum)
+simpson <- diversity(data.taxo$abundance,index = "simpson")
+data.div[["simps"]] <- simpson
+######################################################
+### ACP Paillex 
+## PCA (axis F1 is inverted to have a positive relatioship to connectivity)
+env.pca <- dudi.pca(data.env$connect[,2:5],nf=2,scannf = FALSE)
+co <- cbind(-env.pca$co[,1],env.pca$co[,2])
+rownames(co) <- rownames(env.pca$co)
+a1 <- -env.pca$li[,1]
+a2 <- env.pca$li[,2]
 
 ######################################################
+## Data frame for modeling
+dflmer<- data.frame(FRic=data.div$FRic,
+                    Simpson=data.div$simps,
+                    RawRichness=data.div$rawRich,
+                    RarRichness=data.div$rarRich,
+                    Rao=data.div$Rao,
+                    FEve=data.div$FEve,
+                    FDis=data.div$FDis,
+                    F1=a1,
+                    Overflow=data.env$hydro$Oey,
+                    station=samp.info$Station,
+                    site=samp.info$Site,
+                    sector=samp.info$Sector,
+                    season=samp.info$Season,
+                    year=samp.info$Year)
 
-data.div$rich
-data.div$rao
-plot(data.div$rich,data.div$rao)
+saveRDS(dflmer,"dflmer_w_bin.rds")
+
+dflmer <- readRDS("dflmer_w.rds")
+
+
+##################
+
+
+
