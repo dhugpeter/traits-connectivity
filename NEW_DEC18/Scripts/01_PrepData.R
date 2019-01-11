@@ -222,9 +222,12 @@ data.div[["Rao"]] <- fd$RaoQ
 ######################################################
 ### Rarefied taxonomic richness
 sampleSize <- min(apply(data.taxo$abundance,1,sum))
+
 range(rowSums(data.taxo$abundance))
-# sampleSize <- 100
-data.div[["rarRich"]] <- rarefy(data.taxo$abundance,sample=sampleSize,MARGIN=1)
+rarecurve(data.taxo$abundance, MARGIN=1)
+tail(data.taxo$abundance[sort(rowSums(data.taxo$abundance)),])
+sampleSize <- 100 #somewhat arbitrary, but I really think 12 is too extreme
+data.div[["rarRich"]] <- rarefy(data.taxo$abundance,sample=sampleSize)
 alpha <- ifelse(data.taxo$abundance>0,1,0)
 data.div[["rawRich"]] <- apply(alpha,1,sum)
 simpson <- diversity(data.taxo$abundance,index = "simpson")
@@ -255,7 +258,7 @@ dflmer<- data.frame(FRic=data.div$FRic,
                     season=samp.info$Season,
                     year=samp.info$Year)
 
-saveRDS(dflmer,"dflmer_w_bin.rds")
+saveRDS(dflmer,"dflmer_w.rds")
 
 dflmer <- readRDS("dflmer_w.rds")
 

@@ -1,5 +1,5 @@
 ---
-title: "Diversité taxonomique et fonctionnelle ~ connectivité hydrologique latérale"
+title: "Diversit? taxonomique et fonctionnelle ~ connectivit? hydrologique lat?rale"
 author: "Marle Pierre - Timoner Pablo"
 date: "10 janvier 2019"
 output:
@@ -10,31 +10,31 @@ output:
 options(width = 2000)
 ```
 
-## Méthodes
-Nous avons modélisé la diversité taxonomique et fonctionnelle en fonction de deux variables synthétiques de la connectivité latérale.
+## M?thodes
+Nous avons mod?lis? la diversit? taxonomique et fonctionnelle en fonction de deux variables synth?tiques de la connectivit? lat?rale.
 
-Nous avons choisi des estimateurs qui intègrent les abondances.
+Nous avons choisi des estimateurs qui int?grent les abondances.
 
-Les estimateurs sélectionnés (variables réponses) sont:
+Les estimateurs s?lectionn?s (variables r?ponses) sont:
 
-* **Richesse taxonomique raréfiée** (noté RarRichness)  
-* **Dispersion fonctionnelle** (noté FDis; Laliberté, E. and P. Legendre, 2010)
+* **Richesse taxonomique rar?fi?e** (not? RarRichness)  
+* **Dispersion fonctionnelle** (not? FDis; Lalibert?, E. and P. Legendre, 2010)
 
-Les deux variables explicatives (analysées séparément) liées à la connectivité latérale sont:
+Les deux variables explicatives (analys?es s?par?ment) li?es ? la connectivit? lat?rale sont:
 
-* **Durée de connexion** par l'amont qui rend le chenal lotique (nombre de jours sur l'année précédant l'échantillonnage) (noté Overflow)  
-* **Indice de connectivité** (noté F1; Paillex, 2007)
+* **Dur?e de connexion** par l'amont qui rend le chenal lotique (nombre de jours sur l'ann?e pr?c?dant l'?chantillonnage) (not? Overflow)  
+* **Indice de connectivit?** (not? F1; Paillex, 2007)
 
-Les saisons d'échantillonnage (en facteur) et les années (en continu) ont aussi été intégrées dans nos modèles.
+Les saisons d'?chantillonnage (en facteur) et les ann?es (en continu) ont aussi ?t? int?gr?es dans nos mod?les.
 
-Pour chaque combinaison (par exemple RarRichness ~ Overflow), un modèle a été créé de la manière suivante:
+Pour chaque combinaison (par exemple RarRichness ~ Overflow), un mod?le a ?t? cr?? de la mani?re suivante:
 
 **RarRichness ~ (1|station:site) + I(overflow^2) + overflow + overflow:season + season + year**
 
-incluant un effet aléatoire lié au site échantilloné, permettant un terme quadratique pour la variable explicative de connectivité, une interaction entre la variable de connectivité et la saison, ainsi que l'année dans le but d'identifier un trend potentiel (e.g. réchauffement climatique, apparition d'espèces invasives, incision du lit mineur).    
-Les R2 marginaux et conditionnels du modèle ont été calculés.   
-Des anovas ont été calculées pour tester la différence entre les modèles construits (Overflow vs F1).
-Nous avons ajouté les courbes réponses des deux variables de connectivité interagissant avec le facteur saison.
+incluant un effet al?atoire li? au site ?chantillon?, permettant un terme quadratique pour la variable explicative de connectivit?, une interaction entre la variable de connectivit? et la saison, ainsi que l'ann?e dans le but d'identifier un trend potentiel (e.g. r?chauffement climatique, apparition d'esp?ces invasives, incision du lit mineur).    
+Les R2 marginaux et conditionnels du mod?le ont ?t? calcul?s.   
+Des anovas ont ?t? calcul?es pour tester la diff?rence entre les mod?les construits (Overflow vs F1).
+Nous avons ajout? les courbes r?ponses des deux variables de connectivit? interagissant avec le facteur saison.
 
 ```{r prep,message=FALSE,echo=FALSE}
 
@@ -49,7 +49,7 @@ library(visreg)
 library(ggplot2)
 
 ## Set working directory
-dflmer <- readRDS("../Tables/dflmer_w_Do.rds")
+dflmer <- readRDS("../Tables/dflmer_w.rds")
 ```
 
 
@@ -120,37 +120,37 @@ print(anova(lmo[["F1_FDis"]],lmo[["Overflow_FDis"]]))
 ```
 
 ## Pistes de discussion
-### Overflow vs Indice de connectivité
-Les modèles liés à la variable Overflow donnent des meilleurs résultats (anovas significatives).
-On aurait pu s'attendre à ce que la variable F1 soit plus intégratrice de l'habitat (au-delà de la connectivité hydrologique) et explique mieux nos variables biologiques. En effet, elle est censée intégrer des facteurs geomorphologiques (e.g. orientation, pente, section mouillée, profondeur) et thermiques (e.g. recouvrement macrophyte et dégradation de la matière organique).
+### Overflow vs Indice de connectivit?
+Les mod?les li?s ? la variable Overflow donnent des meilleurs r?sultats (anovas significatives).
+On aurait pu s'attendre ? ce que la variable F1 soit plus int?gratrice de l'habitat (au-del? de la connectivit? hydrologique) et explique mieux nos variables biologiques. En effet, elle est cens?e int?grer des facteurs geomorphologiques (e.g. orientation, pente, section mouill?e, profondeur) et thermiques (e.g. recouvrement macrophyte et d?gradation de la mati?re organique).
 
-Globalement, on observe une relation unimodale entre la connectivité et les métriques de diversité, ce qui pourrait rejoindre l'hypothèse des perturbations intermédiaires.
+Globalement, on observe une relation unimodale entre la connectivit? et les m?triques de diversit?, ce qui pourrait rejoindre l'hypoth?se des perturbations interm?diaires.
 
 
-### Diversité taxonomique vs diversité fonctionnelle
-Les R2 marginaux des modèles de diversité fonctionnelle (sans tenir compte de l'effet aléatoire) sont inférieurs au modèles de diversité taxonomique => codage flou ?
+### Diversit? taxonomique vs diversit? fonctionnelle
+Les R2 marginaux des mod?les de diversit? fonctionnelle (sans tenir compte de l'effet al?atoire) sont inf?rieurs au mod?les de diversit? taxonomique => codage flou ?
 
 ```{r r2,message=FALSE,echo=FALSE}
-print("Diversité taxonomique")
+print("Diversit? taxonomique")
 dfR2 <- as.data.frame(matrix(0,ncol=3,nrow=2))
-colnames(dfR2) <- c("Variable de connectivité","R2m","R2c")
-dfR2[,"Variable de connectivité"] <- c("Overflow","F1")
+colnames(dfR2) <- c("Variable de connectivit?","R2m","R2c")
+dfR2[,"Variable de connectivit?"] <- c("Overflow","F1")
 dfR2["R2m"] <- c(0.22,0.11)
 dfR2["R2c"] <- c(0.33,0.31)
 kable(dfR2)
 
-print("Diversité fonctionelle")
+print("Diversit? fonctionelle")
 dfR2 <- as.data.frame(matrix(0,ncol=3,nrow=2))
-colnames(dfR2) <- c("Variable de connectivité","R2m","R2c")
-dfR2[,"Variable de connectivité"] <- c("Overflow","F1")
+colnames(dfR2) <- c("Variable de connectivit?","R2m","R2c")
+dfR2[,"Variable de connectivit?"] <- c("Overflow","F1")
 dfR2[,"R2m"] <- c(0.10,0.03)
 dfR2[,"R2c"] <- c(0.30,0.27)
 kable(dfR2)
 ```
 
 
-### Références
+### R?f?rences
 
-Laliberté, E. and P. Legendre (2010) A distance-based framework for measuring functional diversity from multiple traits. Ecology 91:299-305.
+Lalibert?, E. and P. Legendre (2010) A distance-based framework for measuring functional diversity from multiple traits. Ecology 91:299-305.
 
 Paillex, A., Castella, E. & Carron, G. (2007). Aquatic macroinvertebrate response along a gradient of lateral connectivity in river floodplain channels. Journal of the North American Benthological Society, 26, 779-796.
