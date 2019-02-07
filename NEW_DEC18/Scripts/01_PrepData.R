@@ -232,6 +232,18 @@ alpha <- ifelse(data.taxo$abundance>0,1,0)
 data.div[["rawRich"]] <- apply(alpha,1,sum)
 simpson <- diversity(data.taxo$abundance,index = "simpson")
 data.div[["simps"]] <- simpson
+
+
+a <- lapply(split(t(data.taxo[["abundance"]]),
+                  data.taxo[["taxa"]]$Order),
+            function(x){rarefy(matrix(x,nrow=ncol(data.taxo[["taxa"]])),
+                  sample=sampleSize)})
+
+a <- a[!sapply(a, function(x) length(x)==1)]
+
+data.div <- append(data.div,a)
+
+
 ######################################################
 ### ACP Paillex 
 ## PCA (axis F1 is inverted to have a positive relatioship to connectivity)
@@ -247,6 +259,12 @@ dflmer<- data.frame(FRic=data.div$FRic,
                     Simpson=data.div$simps,
                     RawRichness=data.div$rawRich,
                     RarRichness=data.div$rarRich,
+                    GastRichness=data.div$Gasteropoda,
+                    MayRichness=data.div$Ehpemeroptera,
+                    PlecRichness=data.div$Plecoptera,
+                    TRichRichness=data.div$Trichoptera,
+                    BivRichness= data.div$Bivalvia,
+                    AmphRichness= data.div$Amphipoda,
                     Rao=data.div$Rao,
                     FEve=data.div$FEve,
                     FDis=data.div$FDis,
