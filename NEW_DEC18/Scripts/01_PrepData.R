@@ -1,4 +1,3 @@
-#### THIS SCRIPT IS USED TO PREPARE THE DATA FOR FURTHER MODELING
 #### IT NEEDS THE ABUNDANCE RAW DATA FOR TRAIT ANALYSES AND ABUNDANCE RAW DATA FOR TAXONOMIC ANALYSES.
 #### IT NEEDS THE RAW HYDROLOGICAL DATA.
 #### IT NEEDS THE RAW ENVIRONMENTAL DATA FOR CALCULTING THE CONNECTIVITY INDEX.
@@ -236,10 +235,9 @@ data.div[["simps"]] <- simpson
 
 a <- lapply(split(t(data.taxo[["abundance"]]),
                   data.taxo[["taxa"]]$Order),
-            function(x){rarefy(matrix(x,nrow=ncol(data.taxo[["taxa"]])),
-                  sample=sampleSize)})
+            function(x){rarefy(matrix(x,nrow=nrow(data.taxo[["abundance"]]), byrow=T),  sample=sampleSize)})
 
-a <- a[!sapply(a, function(x) length(x)==1)]
+
 
 data.div <- append(data.div,a)
 

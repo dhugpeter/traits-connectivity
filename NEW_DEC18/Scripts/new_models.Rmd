@@ -13,22 +13,63 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r cars}
-dflmer <- readRDS("../Tables/dflmer_w.rds")
+library(lattice)
+dflmer <- readRDS("dflmer_w.rds")
 str(dflmer)
 plot(dflmer$RarRichness ~ log(dflmer$Overflow))
 hist(dflmer$RarRichness)
 plot(dflmer$FRic ~ log(dflmer$Overflow))
 hist(dflmer$FRic)
-dotplot(RarRichness ~ log(Overflow)| station + season,dflmer, groups=station)
+
+e <- ggplot(dflmer, aes(log(Overflow+1),GastRichness))
+e + geom_point()
+
+e <- ggplot(dflmer, aes(F1,GastRichness))
+e+geom_point()
+
+tab_long_orders <- gather(dflmer, key = order, value = richness, 5:10)
+
+f <- ggplot(tab_long_orders, aes(log(Overflow), richness))
+f + geom_point() + facet_wrap(vars(order)) 
+
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
-m1 <- lm(RarRichness ~ 1, data=dflmer)
-summary(m1)
+library(lme4)
+
+names(dflmer)
+m1 <- lm(GastRichness ~ I(Overflow^2)+season, data=dflmer)
+
+
+
+dflmer$fstat <- factor(paste(dflmer$station, dflmer$site))
+mm1 <-  lmer(GastRichness ~ Overflow + season + (1|station), data=dflmer)
+summary(mm1)
+
+mm2 <-  lmer(RarRichness~ F1+season+ 1|fstat,data=dflmer)
+summary(mm2)
+
+
+plot(mm1)
+anova(mm1)
+plot(mm2)
+
+
+
+library(lattice)
+plot(dflmer$RarRichness~factor(cut(dflmer$Overflow,3)))
+plot(dflmer$RarRichness~factor(cut(dflmer$F1,3)))
+plot(dflmer$FRic~factor(cut(dflmer$F1,3)))
+plot(dflmer$FRic~factor(cut(dflmer$Overflow,3)))
+dotplot(dflmer$FRic~log(dflmer$Overflow+1)|factor(dflmer$year))
+
+factor(dflmer$Overflow)
+
+library(MASS)
+al <- lda(cut(dflmer$F1,3)~dflmer$RarRichness)
+x11()
+plot(al)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
