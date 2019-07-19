@@ -21,7 +21,7 @@ library(car)
 ```
 
 
-##Graphical representation of relations between rarefied richness and lateral hydrological connectivity
+## Graphical representation of relations between rarefied richness and lateral hydrological connectivity
 ```{r plots}
 dflmer <- readRDS(here("NEW_DEC18","Tables","dflmer_w.rds"))
 dflmer$EPTRichness <- dflmer$GastRichness + dflmer$PlecRichness + dflmer$TRichRichness 
