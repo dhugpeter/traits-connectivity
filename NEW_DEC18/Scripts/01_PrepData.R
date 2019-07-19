@@ -245,9 +245,10 @@ data.div <- append(data.div,a)
 ######################################################
 ### ACP Paillex 
 ## PCA (axis F1 is inverted to have a positive relatioship to connectivity)
-env.pca <- dudi.pca(data.env$connect[,2:5],nf=2,scannf = FALSE)
+env.pca <- dudi.pca(data.env$connect[,2:5],nf=2,scannf = FALSE, scale=T, center=T)
 co <- cbind(-env.pca$co[,1],env.pca$co[,2])
 rownames(co) <- rownames(env.pca$co)
+s.arrow(co)
 a1 <- -env.pca$li[,1]
 a2 <- env.pca$li[,2]
 
@@ -258,7 +259,7 @@ dflmer<- data.frame(FRic=data.div$FRic,
                     RawRichness=data.div$rawRich,
                     RarRichness=data.div$rarRich,
                     GastRichness=data.div$Gasteropoda,
-                    MayRichness=data.div$Ehpemeroptera,
+                    MayRichness=data.div$Ephemeroptera,
                     PlecRichness=data.div$Plecoptera,
                     TRichRichness=data.div$Trichoptera,
                     BivRichness= data.div$Bivalvia,
