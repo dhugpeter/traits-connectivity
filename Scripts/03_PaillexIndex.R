@@ -9,7 +9,7 @@
 library(ade4)
 
 ## Load environmental table
-env <- read.table("../Tables/02_env_variables.txt",header=TRUE)
+env <- read.table("./Tables/02_env_variables.txt",header=TRUE)
 
 ## Select years
 env <- subset(env,env$an>=as.numeric(yearLim))
