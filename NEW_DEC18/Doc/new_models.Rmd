@@ -23,22 +23,30 @@ library(car)
 
 ## Graphical representation of relations between rarefied richness and lateral hydrological connectivity
 ```{r plots}
+range01 <- function(x){(x-min(x))/(max(x)-min(x))}
+
 dflmer <- readRDS(here("NEW_DEC18","Tables","dflmer_w.rds"))
 dflmer$EPTRichness <- dflmer$GastRichness + dflmer$PlecRichness + dflmer$TRichRichness 
 dflmer$fstat <- factor(paste(dflmer$station, dflmer$site))
+dflmer$F1_r <- range01(dflmer$F1)
 str(dflmer)
+
+a <- ggplot(dflmer, aes(F1_r,log(Overflow+1)))
+a + geom_point() + facet_wrap(vars(year))
+ggplot(dflmer, aes(year,F1)) + geom_point()
+ggplot(dflmer, aes(year,log(Overflow+1))) + geom_point()
 
 tab_long_orders <- gather(dflmer, key = order, value = richness, c(5:10,21))
 
 f_brut_o <- tab_long_orders %>% 
   filter(order %in% c("EPTRichness", "GastRichness")) %>% 
-  ggplot(aes(Overflow, richness,color = season))
+  ggplot(aes(Overflow, richness,color = year))
 f_brut_f1 <- tab_long_orders %>% 
   filter(order %in% c("EPTRichness", "GastRichness")) %>% 
-  ggplot(aes(F1, richness,color = season))
+  ggplot(aes(F1_r, richness,color = year))
 f_log_o <- tab_long_orders %>% 
   filter(order %in% c("EPTRichness", "GastRichness")) %>% 
-  ggplot(aes(log(Overflow+1), richness,color = season))
+  ggplot(aes(log(Overflow+1), richness,color = year))
 
 
 f_brut_o + geom_point() + facet_wrap(vars(order)) 
@@ -56,8 +64,8 @@ names(dflmer)
 m1 <- lm(GastRichness ~ log(Overflow+1)+season, data=dflmer)
 
 
-mm1 <-  lmer(GastRichness ~ Overflow + season + (1|station), data=dflmer, REML = F)
-mm1_1 <-  lmer(GastRichness ~ F1 + season + (1|station), data=dflmer, REML = F)
+mm1 <-  lmer(RarRichness ~ Overflow + season + (1|station), data=dflmer, REML = F)
+mm1_1 <-  lmer(GastRichness ~ F1_r + factor (year) +season + (1|station), data=dflmer, REML = F)
 mm1_2 <-  lmer(GastRichness ~ log(Overflow+1) + season + (1|station), data=dflmer, REML = F)
 
 mm2 <-  lmer(EPTRichness ~ Overflow  + (1|station) +(1|season), data=dflmer, REML = F)
@@ -67,6 +75,7 @@ mm2_2 <-  lmer(EPTRichness ~ log(Overflow+1) + (1|station)+(1|season), data=dflm
 summary(mm1)
 summary(mm2)
 Anova(mm1)
+Anova(mm1_1)
 Anova(mm2)
 Anova(mm2_1)
 Anova(mm2_2)

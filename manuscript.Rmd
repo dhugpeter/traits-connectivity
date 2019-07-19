@@ -1,0 +1,86 @@
+---
+title: Your title here!
+author: |
+  | $^1$Affiliation1,  $^2$Affiliation2
+  | Author 1^[Corresponding author: email@email.com] $^1$, Author 2 $^1$, Author 3 $^2$
+abstract: |
+  Your abstract goes here...
+bibliography: biblio.bib
+csl: freshwater-biology.csl
+output:
+  bookdown::pdf_document2:
+  toc: no
+  keep_md: yes
+fig_caption: yes
+always_allow_html: yes
+keep: yes
+header-includes:
+  - \usepackage{endfloat}    
+  - \usepackage{setspace}\doublespacing
+  - \usepackage{lineno}
+  - \linenumbers
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r Setup..., message=FALSE, warning=FALSE, include=FALSE}
+knitr::opts_chunk$set(fig.pos = 'p') # Places figures on their own pages
+knitr::opts_chunk$set(out.width = '100%', dpi=300)
+
+# I usually load my libraries up front to keep things organized
+library(bookdown)
+library(knitr)
+#library(kableExtra)
+library(ggplot2)
+library(ggthemes)
+#library(ggExtra)
+library(dplyr)
+library(stringr)
+
+```
+
+# Introduction
+
+Connectivity is an important but inconsistently defined concept in spatial ecology and conservation biology more especially in large rivers.
+
+Floodplain connectivity is reduced by human activity. Moreover, the degree to which the remaining habitats are functionally linked with flow processes becomes increasingly important in floodplain management. This link is called lateral hydrological connectivity.
+
+It is desirable to quantify connectivity and use this measurement as a basis for decision making in large river floodplains.
+
+If connectivity is to serve as a guide, at least in part, it clearly matters how it is measured. Unfortunately, the ecological literature is awash with different connectivity metrics (Paillex versus Riquier).
+
+Measures of connectivity differ in their data requirements and informational yield.
+
+Two approaches have been employed: i) direct measurements based upon hydrological variables such as the duration or frequency of surface connections between the river and the floodplain channels (Richter & Richter, 2000; Rader, Voelz & Ward, 2008; Bogan, Boersma & Lytle, 2013; Warfe et al., 2014; Fournier et al., 2015), ii) indirect assessments based upon environmental characteristics of the floodplain channels, such as the amount of hydrophytic vegetation or the organic matter content of the sediment, considered as proxy integrating some effects of LHC, especially the shear stress developed during connection phases (Arscott et al., 2005; Paillex, Castella & Carron, 2007; Paillex et al., 2013; Besacier-Monbertrand, Paillex & Castella, 2010; Gallardo et al., 2014).
+
+
+How to efficiency choose between these two alternatives of connectivity measurement ? 
+How connectivity is best measured to explain diversity in large river floodplains ?
+
+
+This framework can be used to decide which connectivity metrics to choose, given particular datasets or, conversely, which type of data to collect, given a particular metric.
+
+EPT and gastropod group served for richness measures to assess the ecological status of floodplain channels because 1) EPT species represent good indicators of well oxygenated water and hydraulic conditions i.e. shear stress and 2) gastropods are typical habitant of lowlands and thus are well suited to characterize environmental conditions in lentic conditions [@Paillex2007] (Reckendorfer et al., 2006; Dolédec et al., 2007; Mérigoux et al., 2009; Gallardo et al., 2014). Nevertheless, traditional taxonomic richness measures may not detect discrete changes in assemblage features (Tupinambás et al., 2014). Hence, we incorporated functional diversity as an additional metric of the two previous taxonomic-based metrics.
+
+
+Figure 1. (A) quadrat methodology involving actual environmental variables (indirect estimation of connectivity) and (B) direct estimation of hydrological connectivity.
+
+
+
+```{r figRef, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Figure caption here"}
+## R code here, with plot output at end, for example using ggplot2
+
+```
+
+To cross-reference figures in your text, simply write something like: As shown in Figure  \@ref(fig:figRef) ...
+Tables can be added using the kable function from knitr, for example:
+```{r tabRef, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, results="asis"}
+
+#0df <- read.csv(...)
+
+#knitr::kable(df, caption = "Table caption here...", booktabs = TRUE)
+```
+
+Cross-referencing a Table is similar to that of a Figure. For example: Table \@ref(tab:tabRef) shows the data...
+
