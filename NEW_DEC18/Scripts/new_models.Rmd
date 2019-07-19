@@ -1,8 +1,8 @@
 ---
-title: "Diversity and Connection"
+title: "Diversity and lateral hydrological connectivity"
 author: "DHP"
 date: "January 11, 2019"
-output: githug_document
+output: github_document
 editor_options: 
   chunk_output_type: console
 ---
@@ -12,11 +12,18 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-```{r}
-library(lattice)
+```{r packages, include = T, echo = F}
 library(ggplot2)
 library(tidyverse)
-dflmer <- readRDS("NEW_DEC18/Tables/dflmer_w.rds")
+library(here)
+library(lme4)
+library(car)
+```
+
+
+##Graphical representation of relations between rarefied richness and lateral hydrological connectivity
+```{r plots}
+dflmer <- readRDS(here("NEW_DEC18","Tables","dflmer_w.rds"))
 dflmer$EPTRichness <- dflmer$GastRichness + dflmer$PlecRichness + dflmer$TRichRichness 
 dflmer$fstat <- factor(paste(dflmer$station, dflmer$site))
 str(dflmer)
@@ -40,10 +47,10 @@ f_brut_f1 + geom_point() + facet_wrap(vars(order))
 
 ```
 
+## Models
 
+```{r models}
 
-```{r}
-library(lme4)
 
 names(dflmer)
 m1 <- lm(GastRichness ~ log(Overflow+1)+season, data=dflmer)
@@ -53,10 +60,16 @@ mm1 <-  lmer(GastRichness ~ Overflow + season + (1|station), data=dflmer, REML =
 mm1_1 <-  lmer(GastRichness ~ F1 + season + (1|station), data=dflmer, REML = F)
 mm1_2 <-  lmer(GastRichness ~ log(Overflow+1) + season + (1|station), data=dflmer, REML = F)
 
-mm2 <-  lmer(EPTRichness ~ Overflow + season + (1|station), data=dflmer, REML = F)
-mm2_1 <-  lmer(EPTRichness ~ F1 + season + (1|station), data=dflmer, REML = F)
-mm2_2 <-  lmer(EPTRichness ~ log(Overflow+1) + season + (1|station), data=dflmer, REML = F)
+mm2 <-  lmer(EPTRichness ~ Overflow  + (1|station) +(1|season), data=dflmer, REML = F)
+mm2_1 <-  lmer(EPTRichness ~ F1 + (1|station)+(1|season), data=dflmer, REML = F)
+mm2_2 <-  lmer(EPTRichness ~ log(Overflow+1) + (1|station)+(1|season), data=dflmer, REML = F)
 
+summary(mm1)
+summary(mm2)
+Anova(mm1)
+Anova(mm2)
+Anova(mm2_1)
+Anova(mm2_2)
 
 anova(mm1,mm1_1, mm1_2)
 anova(mm2,mm2_1, mm2_2)
