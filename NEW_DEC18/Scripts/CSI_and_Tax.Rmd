@@ -1,0 +1,310 @@
+---
+title: "CSI and taxonomical analyses"
+author: "Timoner Pablo"
+date: "22 juillet 2019"
+output:
+  html_document: default
+---
+
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 2000)
+```
+
+
+```{r libraries,message=FALSE,echo=FALSE}
+######################################################
+## Load libraries
+library(lme4)
+library(lmerTest)
+library(MuMIn)
+library(effects)
+library(knitr)
+library(visreg)
+library(ggplot2)
+library(ade4)
+library(vegan)
+library(rstudioapi)
+library(glmmTMB)
+
+```
+
+
+```{r prep, echo=FALSE,warning=FALSE,message=FALSE}
+
+## Taxa to be removed anyway (can be a vector of multiple taxa; can be genus, family or species)
+rmTaxName <- "Chironomidae"
+## Traits to be kept
+selecTraits <- c("feeding","disp","nbcycle","repr")
+## specialization index (Mondy and Usseglio-Polatera 2014)
+tsi <- function(x){
+  (sum((x^2))-(1/ncol(trSp)))/(1-(1/ncol(trSp)))
+}
+
+######################################################
+## Create empty lists where we are going to store our prepared data for analyses and define parameters
+
+# This list will contain 3 objects: a data frame with abundance used for trait analyses, a data frame with trait information and a data frame with info of considered taxa.
+data.traits <- list()
+
+# This list will contain 2 objects: a data frame with abundance used for taxonomical analyses, and a data frame
+# with info of considered taxa (different from traits).
+data.taxo <- list()
+
+# This list will contain 2 objects: a data frame with hydrological data and a data frame of environmental variables (for Paillex index).
+data.env <- list()
+
+######################################################
+## Check for matching samples between hydro, environmental and fauna data
+
+# Load samplings for which we have hydro information
+hydro <- read.csv("../Tables/hydro_data.csv",header = TRUE, stringsAsFactors = FALSE)
+samp.hydro <- hydro$ID
+
+
+# Load samplings for which we have fauna information
+fauna <- read.csv("../Tables/fauna_tax.csv",header=TRUE,stringsAsFactors = FALSE)
+samp.fauna <- colnames(fauna)[-c(1:5)]
+
+# Load samplings for which we have environmental information
+connect <- read.csv("../Tables/connect_data.csv",header = TRUE, stringsAsFactors = FALSE)
+samp.connect <- connect$ID
+
+# The following samplings were in the hydro table and not in the fauna table; we remove them.
+samp.hydro[!samp.hydro %in% samp.fauna]
+# Update samplings
+samp <- samp.hydro[samp.hydro %in% samp.fauna]
+
+# The follwing samplings were in the fauna table and not in the new hydro table; we remove them.
+# samp.fauna[!samp.fauna %in% samp]
+# Samplings after 2006 that we are going to remove:
+samp.fauna[!samp.fauna %in% samp][!grepl("03|04|05|06",samp.fauna[!samp.fauna %in% samp])]
+# Update samplings
+samp <- samp.fauna[samp.fauna %in% samp]
+
+# The follwing samplings were in the environemntal table and not in the previously selected samplings (normally, none).
+# samp[!samp.fauna %in% samp.connect]
+# Update samplings
+samp <- samp.connect[samp.connect %in% samp]
+
+# Reorder and keep sampling info
+samp <- samp[order(samp)]
+samp.info <- hydro[match(samp,hydro$ID),1:6]
+rownames(samp.info) <- 1:nrow(samp.info)
+
+
+
+######################################################
+
+## Loop over trait and taxonomic categories (both have different taxa and thus abundances) and keep outputs in the lists
+for(type in c("trait","tax")){
+  ## Read the fauna table for trait and taxon analyses
+  fauna <- read.csv(paste0("../Tables/fauna_",type,".csv"),header=TRUE,stringsAsFactors = FALSE)
+  ## Keep taxon information with code
+  taxon <- fauna[,1:5]
+  ## If trait data
+  if(type=="trait"){
+    ## Column number for separation between traits info and sampling
+    col.sep <- grep("SEPARATION",colnames(fauna))
+    ## Abundance
+    ab <- fauna[,(col.sep+1):ncol(fauna)]
+    # data.traits[["values"]] <- fauna[,6:(col.sep-1)]
+  }else{
+    ab <- fauna[,6:ncol(fauna)]
+  }
+  ab <- t(ab)
+  ## Samplings
+  ab <- ab[match(samp,rownames(ab)),]
+  ## Retrieve taxon codes for column names
+  colnames(ab) <- taxon$Code
+  rownames(ab) <- NULL
+  ## Taxa with 0 occurence have to be removed (it may happen with the year filter)
+  taxToRm <- as.character(taxon$Code[apply(ab,2,sum)==0])
+  
+  ## Identified species ?
+  rmTaxName <- c(rmTaxName,unique(taxon$Species[grepl("sp\\.",taxon$Species)]))
+ 
+  ## Other taxa to be removed like the Chironomidae ?
+  for(lev in c("Family","Genus","Species")){
+    for(sp in rmTaxName){
+      if(length(length(taxon$Code[which(taxon[,lev]==sp)])>0)){
+        taxToRm <- c(taxToRm,as.character(taxon$Code[which(taxon[,lev]==sp)]))
+      }
+    }
+  }
+  ## In case we have the same information for multiple levels (eg. Chironomidae)
+  taxToRm <- unique(taxToRm)
+  ab <- ab[,!(colnames(ab) %in% taxToRm)]
+  
+  ## Remove empty observations (sample without any taxon)
+  # Keep the variable
+  keepRow <- apply(ab,1,sum)>0
+  ab <- ab[keepRow,]
+  ## Save data
+  if(type=="trait"){
+    data.traits[["values"]] <- fauna[!(fauna$Code %in% taxToRm),6:(col.sep-1)]
+    data.traits[["taxa"]] <- taxon[taxon$Code %in% colnames(ab),]
+    data.traits[["abundance"]] <- as.data.frame(ab)
+  }else{
+    data.taxo[["taxa"]] <- taxon[taxon$Code %in% colnames(ab),]
+    data.taxo[["abundance"]] <- as.data.frame(ab)
+  }
+}
+
+## Prepare environmental/hydro tables
+for(type in c("hydro","connect")){
+  ## Read the fauna table for trait and taxon analyses
+  env <- read.csv(paste0("../Tables/",type,"_data.csv"),header=TRUE,stringsAsFactors = FALSE)
+  env <- env[match(samp,env[,"ID"]),]
+  ## Depending on whether we remove a sample because of zero taxon
+  env <- env[keepRow,]
+  data.env[[type]] <- env
+}
+
+## Update samp.info
+samp.info <- samp.info[keepRow,]
+
+
+## Some tests
+# nrow(data.taxo[["taxa"]])==ncol(data.taxo[["abundance"]])
+# nrow(data.traits[["taxa"]])==nrow(data.traits[["values"]])
+# nrow(data.traits[["taxa"]])==ncol(data.traits[["abundance"]])
+# nrow(data.taxo[["abundance"]])==nrow(data.env[["hydro"]])
+# nrow(samp.info)==nrow(data.taxo[["abundance"]])
+
+######################################################
+## Prepare the predictors
+# Calculate the Paillex index (F1)
+env.pca <- dudi.pca(data.env$connect[,2:5],nf=2,scannf = FALSE)
+co <- cbind(-env.pca$co[,1],env.pca$co[,2])
+rownames(co) <- rownames(env.pca$co)
+a1 <- -env.pca$li[,1]
+# Between 0 and 1
+a1 <- (a1-min(a1))/(max(a1)-min(a1))
+
+## Overflow
+# Log
+overflow <- log(1+data.env$hydro$Oey)
+# Between 0 and 1
+overflow <- (overflow-min(overflow))/(max(overflow)-min(overflow))
+
+## Prepare the respones
+# Traits
+blocks <- c(4,5,7,6,10,5,4,3,2,8,5)
+names(blocks) <- c("curr","sapr","size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
+trait.cat <- data.frame(cat=colnames(data.traits$value),trait=rep(names(blocks),blocks),stringsAsFactors = FALSE)
+# Take out some trait categories
+trToRm <- colnames(data.traits$value)[apply(data.traits$values,2,sum)==0]
+trToRm <- c(trToRm,as.character(trait.cat$cat[!trait.cat$trait %in% selecTraits]))
+tr <- data.traits$values[,!(colnames(data.traits$values) %in% trToRm)]
+# Blocks of the new trait table
+# colnames(tr)
+new.blocks <- table(as.character(trait.cat[trait.cat$cat %in% colnames(tr),]$trait))
+blocks <- new.blocks[match(unique(trait.cat$trait),names(new.blocks))]
+blocks <- blocks[!is.na(blocks)]
+# sum(blocks)==ncol(tr)
+# Prepare trait fuzzy table
+tr <- prep.fuzzy.var(tr,blocks)
+
+# Taxonomic metrics
+taxFilter <- list(All=unique(data.taxo$taxa$Order),EPT=c("Ephemeroptera","Trichoptera","Plecoptera"),Gastero="Gasteropoda")
+taxDiv <- list()
+for(i in 1:length(taxFilter)){
+  cond <- data.taxo$taxa$Order %in% taxFilter[[i]]
+  # Rarefied taxonomic richness
+  # sampleSize <- min(apply(data.taxo$abundance[,cond],1,sum))
+  # range(rowSums(data.taxo$abundance[,cond]))
+  sampleSize <- 100
+  taxDiv[[paste0("rarRich_",names(taxFilter)[i])]] <- rarefy(data.taxo$abundance[,cond],sample=sampleSize,MARGIN=1)
+  # Simpson
+  simpson <- diversity(data.taxo$abundance[,cond],index = "simpson")
+  # Remove 0 and 1 so we can use the beta distribution family
+  simpson [simpson<0.0000001] <- 0.00001
+  simpson [simpson >0.9999999] <- 0.9999
+  taxDiv[[paste0("simpson_",names(taxFilter)[i])]] <- simpson
+}
+
+```
+
+```{r models, echo=FALSE,warning=FALSE,message=FALSE}
+
+## CSI analyses
+## Loop over the traits
+for(singleTrait in names(blocks)){
+  # Indices of trait categories  
+  colCat <- which(colnames(tr) %in% trait.cat$cat[trait.cat$trait %in% singleTrait])
+  # Subset
+  trSp <- tr[,colCat]
+  # Calculate the taxon specialization index
+  TSI <- apply(trSp,1,tsi)
+  # Abundances for weighting
+  ab.w <- log(1+data.traits$abundance)
+  # Calculate the CSI
+  CSI <- (as.matrix(ab.w) %*% TSI)/apply(as.matrix(ab.w),1,sum)
+  # Remove 0 and 1 so we can use the beta distribution family (if not: Error in eval(family$initialize) : y values must be 0 < y < 1)
+  CSI[CSI<0.000000001] <- 0.000000001
+  CSI[CSI>0.999999999] <- 0.999999999
+  
+  # Data frame for modeling
+  dflmer <- data.frame(Overflow=overflow,F1=a1,
+                       CSI=CSI,station=samp.info$Station,site=samp.info$Site,season=samp.info$Season,year=samp.info$Year)
+  dflmer$year <-  as.integer(gsub("20","",dflmer$year))
+  # For each predictor
+  for(varX in c("Overflow","F1")){
+    if(varX == "Overflow"){
+      glmm <- glmmTMB(CSI~(1|station:site)+Overflow,data=dflmer,family = beta_family(link = "logit"))
+    }else{
+      glmm <- glmmTMB(CSI~(1|station:site)+F1,data=dflmer,family = beta_family(link = "logit"))
+    }
+    sum.glmm <- summary(glmm)
+    print(sum.glmm)
+    if(sum.glmm$coefficients$cond[2,4]<0.05){
+      p <- visreg(glmm, varX, ylab="CSI",scale="response", points=list(col="#55555540", cex=0.25,pch=16),gg=TRUE,overlay=TRUE,type = "conditional")
+      p <- p+geom_point(data = dflmer,mapping=aes_string(x=varX,y="CSI"))
+      p <- p + theme_bw()
+      p <- p + ylab(paste("CSI-",singleTrait))
+      p <- p + ggtitle(paste0(singleTrait,"; p-value: ",signif(sum.glmm$coefficients$cond[2,4],2)))
+      # p <- p+facet_wrap(.~season)
+      print(p)
+    }else{
+      print(paste(varX,"vs",singleTrait,"is not significant !"))
+    }
+  }
+}
+
+######################################
+## Taxonomical analyses
+# names(taxDiv)
+# Family distributions for the metrics
+famDist <- list(eval(parse(text="gaussian()")),eval(parse(text="beta_family(link = 'logit')")))
+# For all, epts and gasteros
+famDist <- c(famDist,famDist,famDist)
+
+# Loop on the metrics
+for(i in 1:length(taxDiv)){
+  # Data frame for modeling
+  dflmer <- data.frame(Overflow=overflow,F1=a1,
+                       Diversity=taxDiv[[i]],station=samp.info$Station,site=samp.info$Site,season=samp.info$Season,year=samp.info$Year)
+  dflmer$year <-  as.integer(gsub("20","",dflmer$year))
+  # For each predictor
+  for(varX in c("Overflow","F1")){
+    if(varX == "Overflow"){
+      glmm <- glmmTMB(Diversity~(1|station:site)+Overflow,data=dflmer,family = famDist[[i]])
+    }else{
+      glmm <- glmmTMB(Diversity~(1|station:site)+F1,data=dflmer,family = famDist[[i]])
+    }
+    sum.glmm <- summary(glmm)
+    if(sum.glmm$coefficients$cond[2,4]<0.05){
+      p <- visreg(glmm, varX, ylab="Diversity",scale="response", points=list(col="#55555540", cex=0.25,pch=16),gg=TRUE,overlay=TRUE,type = "conditional")
+      p <- p+geom_point(data = dflmer,mapping=aes_string(x=varX,y="Diversity"))
+      p <- p + theme_bw()
+      p <- p + ylab(names(taxDiv)[i])
+      p <- p + ggtitle(paste0(names(taxDiv)[i],"; p-value: ",signif(sum.glmm$coefficients$cond[2,4],2)))
+      # p <- p+facet_wrap(.~season)
+      print(p)
+    }else{
+      print(paste(varX,"vs",names(taxDiv)[i],"is not significant !"))
+    }
+  }
+}
+
+```
