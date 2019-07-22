@@ -31,6 +31,9 @@ data.env <- list()
 # This list will contain 3 objects: vectors of diversity responses
 data.div <- list()
 
+# This list will contain the ratios of traits analougous to Paillex2007
+data.fun <- list()
+
 ## Taxa to be removed (can be a vector of multiple taxa; can be genus, family or species)
 rmTaxName <- "Chironomidae"
 
@@ -43,6 +46,7 @@ samp.hydro <- hydro$ID
 # samp.hydro <- samp.hydro[grepl("_Sp",samp.hydro)]
 
 # Load samplings for which we have fauna information
+
 fauna <- read.csv("fauna_tax.csv",header=TRUE,stringsAsFactors = FALSE)
 samp.fauna <- colnames(fauna)[-c(1:5)]
 
@@ -149,7 +153,7 @@ blocks <- c(4,5,7,6,10,5,4,3,2,8,5)
 # blocks <- c(4,5,7,6,10,4,4,3,2,8,5)
 # blocks <- c(7,6,10,4,4,3,2,8,5)
 names(blocks) <- c("curr","sapr","size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
-# names(blocks) <- c("size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
+#names(blocks) <- c("size","locom","feeding","resp","disp","nbcycle","cycldur","repr","resist")
 # tr <- tr[,-c(1:9)]
 # rmTr <- c(1,2,3,11)
 # blocks <- blocks[-rmTr]
@@ -186,18 +190,32 @@ names(blocks) <- c("curr","sapr","size","locom","feeding","resp","disp","nbcycle
 # tr <- prep.fuzzy.var(tr,blocks,row.w = wei)
 tr <- prep.fuzzy.var(tr,blocks)
 
+### Calculate the trait frequency by site
+tr_site_abs <-as.data.frame( t(t(as.matrix(tr)) %*% t(as.matrix(data.traits$abundance))))
+
+total <- rowSums(data.traits$abundance)
+
+tr_site <- tr_site_abs/total
+
+data.fun[["shr"]] <- tr_site$shr/(tr_site$shr+tr_site$gat+tr_site$aff+tr_site$pff)
+
+data.fun[["fil"]] <- (tr_site$aff+tr_site$pff)/(tr_site$gat)
+data.fun[["pred"]] <- (tr_site$pre + tr_site$par)/(rowSums(tr_site[,23:29,32]))
+data.fun[["vol"]] <- tr_site$m1y /rowSums(tr_site[,42:43])
+
+
 ######################################################
 ### Functional diversity
 ## Functional distances between taxa
-fca.traits <- dudi.fca(tr,scannf=FALSE,nf=50)
-fca.dist <- dist.dudi(fca.traits)
+#fca.traits <- dudi.fca(tr,scannf=FALSE,nf=5)
+#fca.dist <- dist.dudi(fca.traits)
 # rrao <- rare_Rao(as.data.frame(t(as.matrix(data.traits$abundance))),fca.dist,sim = TRUE,resampling = 20)
 # data.div[["rrao"]] <- rrao[,1]
 
 ## Rao diversity
 # rao <- dpcoa(data.traits$abundance,fca.dist,scannf = FALSE,nf=2)
 # data.div[["rao"]] <- rao$RaoDiv
-labels(fca.dist) -> names(data.traits$abundance)
+#labels(fca.dist) -> names(data.traits$abundance)
 
 # sampleSize <- min(apply(data.traits$abundance,1,sum))
 # rar.ab <- rrarefy(data.traits$abundance,20)
@@ -211,12 +229,13 @@ labels(fca.dist) -> names(data.traits$abundance)
 # fd <- dbFD(newDist,rar.ab,m=10)
 # fd$FRic
 
-fd <- dbFD(fca.dist,data.traits$abundance,w.abun = TRUE,m=20)
+#fd <- dbFD(fca.dist,data.traits$abundance,w.abun = TRUE,m=20)
 
-data.div[["FDis"]] <- fd$FDis
-data.div[["FRic"]] <- fd$FRic
-data.div[["FEve"]] <- fd$FEve
-data.div[["Rao"]] <- fd$RaoQ
+#data.div[["FDis"]] <- fd$FDis
+#data.div[["FRic"]] <- fd$FRic
+#data.div[["FEve"]] <- fd$FEve
+#data.div[["Rao"]] <- fd$RaoQ
+
 
 ######################################################
 ### Rarefied taxonomic richness
@@ -254,8 +273,8 @@ a2 <- env.pca$li[,2]
 
 ######################################################
 ## Data frame for modeling
-dflmer<- data.frame(FRic=data.div$FRic,
-                    Simpson=data.div$simps,
+dflmer<- data.frame(Simpson=data.div$simps,
+                    #FRic=data.div$FRic,
                     RawRichness=data.div$rawRich,
                     RarRichness=data.div$rarRich,
                     GastRichness=data.div$Gasteropoda,
@@ -264,9 +283,13 @@ dflmer<- data.frame(FRic=data.div$FRic,
                     TRichRichness=data.div$Trichoptera,
                     BivRichness= data.div$Bivalvia,
                     AmphRichness= data.div$Amphipoda,
-                    Rao=data.div$Rao,
-                    FEve=data.div$FEve,
-                    FDis=data.div$FDis,
+                    #Rao=data.div$Rao,
+                    #FEve=data.div$FEve,
+                    #FDis=data.div$FDis,
+                    vol=data.fun$vol,
+                    pred=data.fun$pred,
+                    fil=data.fun$fil,
+                    shr=data.fun$shr,
                     F1=a1,
                     Overflow=data.env$hydro$Oey,
                     station=samp.info$Station,

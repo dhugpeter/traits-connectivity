@@ -24,8 +24,8 @@ editor_options:
 ---
 
 
-```{r Setup..., message=FALSE, warning=FALSE, include=FALSE}
-knitr::opts_chunk$set(fig.pos = 'p') # Places figures on their own pages
+```{r setup, message=FALSE, warning=FALSE, include=FALSE}
+knitr::opts_chunk$set(fig.pos = 'h') # Places figures on their own pages
 knitr::opts_chunk$set(out.width = '100%', dpi=300)
 
 # I usually load my libraries up front to keep things organized
@@ -37,6 +37,9 @@ library(ggthemes)
 #library(ggExtra)
 library(dplyr)
 library(stringr)
+library(here)
+library(ggpubr)
+library(tidyverse)
 
 ```
 
@@ -66,21 +69,71 @@ EPT and gastropod group served for richness measures to assess the ecological st
 
 Figure 1. (A) quadrat methodology involving actual environmental variables (indirect estimation of connectivity) and (B) direct estimation of hydrological connectivity.
 
+# Methods
 
+```{r analysis, echo=FALSE, message=FALSE, warning=FALSE}
+range01 <- function(x){(x-min(x))/(max(x)-min(x))}
 
-```{r figRef, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Figure caption here"}
-## R code here, with plot output at end, for example using ggplot2
+dflmer <- readRDS(here("NEW_DEC18","Tables","dflmer_w.rds"))
+
+dflmer$EPTRichness <- dflmer$GastRichness + dflmer$PlecRichness + dflmer$TRichRichness 
+dflmer$fstat <- factor(paste(dflmer$station, dflmer$site))
+dflmer$F1_r <- range01(dflmer$F1)
+dflmer$Overflow_r <- range01(log(dflmer$Overflow + 1))
+
+names(dflmer)
+
+tab_long_orders <- gather(dflmer, key = type, value = richness, c(1:13,21))
 
 ```
 
-To cross-reference figures in your text, simply write something like: As shown in Figure  \@ref(fig:figRef) ...
-Tables can be added using the kable function from knitr, for example:
-```{r tabRef, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, results="asis"}
+# Results
+## Lateral hydrological connectivity - revisited
+```{r fig-OverflowvsF1, echo=FALSE, message=FALSE, warning=FALSE, include=T, fig.cap="Lateral hydrological connectivity according to Paillex et al. vs. Lateral hydrological connectivity according to Riquier et al."}
+a <- ggplot(dflmer, aes(F1_r,Overflow_r))
+a + geom_point() + facet_wrap(vars(year))
 
-#0df <- read.csv(...)
+```
+## Lateral hydrological connectivity and diversity
+```{r figRarvsRich, echo=FALSE, message=FALSE, warning=FALSE, include=T, fig.cap="Rarefied richness vs. lateral hydrological Connectivity"}
 
-#knitr::kable(df, caption = "Table caption here...", booktabs = TRUE)
+library(ggpubr)
+
+f_o <- tab_long_orders %>% 
+  filter(type %in% c("RarRichness")) %>% 
+  ggplot(aes(Overflow_r, richness,color = season))
+f_f1 <- tab_long_orders %>% 
+  filter(type %in% c("RarRichness")) %>% 
+  ggplot(aes(F1_r, richness,color = season))
+
+a <- f_o + geom_point()
+b <- f_o + geom_point()
+
+ggarrange(a,b, common.legend = T)
+
 ```
 
-Cross-referencing a Table is similar to that of a Figure. For example: Table \@ref(tab:tabRef) shows the data...
+```{r figFFG, echo=FALSE, message=FALSE, warning=FALSE, include=T, fig.cap="Feeding group ratios vs. lateral hydrological Connectivity"}
+
+f_o <- tab_long_orders %>% 
+  filter(type %in% c("shr","fil", "pred", "vol")) %>% 
+  ggplot(aes(Overflow_r, richness,color = season))
+f_f1 <- tab_long_orders %>% 
+  filter(type %in% c("shr","fil", "pred", "vol")) %>% 
+  ggplot(aes(F1_r, richness,color = season))
+
+t <- facet_wrap(vars(type),scales = "free")
+
+a <- f_o + geom_point() + t
+b <- f_f1 + geom_point() + t
+
+ggarrange(a,b, common.legend = T)
+
+
+```
+
+
+# Discussion
+
+# References
 
